@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -19,21 +19,24 @@ from util import *
 
 
 class BitcoinTestFramework(object):
-
     # These may be over-ridden by subclasses:
     def run_test(self):
         for node in self.nodes:
             assert_equal(node.getblockcount(), 200)
-            assert_equal(node.getbalance(), 25*50)
+        if not self.options.distinctminer:
+            assert_equal(self.nodes[0].getbalance(), 100 * 50)
+            return
+        for node in self.nodes:
+            assert_equal(node.getbalance(), 25 * 50)
 
     def add_options(self, parser):
         pass
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain(self.options.tmpdir)
+        print("Initializing test directory " + self.options.tmpdir)
+        initialize_chain(self.options.tmpdir, self.options.distinct_miner)
 
-    def setup_network(self, split = False):
+    def setup_network(self, split=False):
         self.nodes = start_nodes(4, self.options.tmpdir)
 
         # Connect the nodes as a "chain".  This allows us
@@ -84,27 +87,41 @@ class BitcoinTestFramework(object):
         import optparse
 
         parser = optparse.OptionParser(usage="%prog [options]")
+        parser.add_option("--clearcache", dest="clearcache", default=False, action="store_true",
+                          help="clear cache on startup")
+        parser.add_option("--distinctminer", dest="distinct_miner", default=True, action="store_true",
+                          help="if enabled, mine only with first node, otherwise use all")
         parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
-                          help="Leave bitcoinds and test.* datadir on exit or error")
+                          help="leave mastercored's and test.* regtest datadir on exit or error")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
-                          help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
+                          help="source directory containing mastercored/mastercore-cli (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
-                          help="Root directory for datadirs")
+                          help="root directory for temporary datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
-                          help="Print out all RPC calls as they are made")
+                          help="print out all RPC calls as they are made")
+        parser.add_option("--verbose", dest="verbose", default=True, action="store_true",
+                          help="provide additional runtime information of common calls")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
         if self.options.trace_rpc:
             import logging
+
             logging.basicConfig(level=logging.DEBUG)
 
-        os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
+        if not self.options.verbose:
+            from framework_info import TestInfo
+            TestInfo.ENABLED = self.options.verbose
+
+        os.environ['PATH'] = self.options.srcdir + ":" + os.environ['PATH']
 
         check_json_precision()
 
         success = False
         try:
+            if self.options.clearcache and os.path.isdir("cache"):
+                print("Clear cache")
+                shutil.rmtree("cache")
             if not os.path.isdir(self.options.tmpdir):
                 os.makedirs(self.options.tmpdir)
             self.setup_chain()
@@ -116,13 +133,13 @@ class BitcoinTestFramework(object):
             success = True
 
         except JSONRPCException as e:
-            print("JSONRPC error: "+e.error['message'])
+            print("JSONRPC error: " + e.error['message'])
             traceback.print_tb(sys.exc_info()[2])
         except AssertionError as e:
-            print("Assertion failed: "+e.message)
+            print("Assertion failed: " + e.message)
             traceback.print_tb(sys.exc_info()[2])
         except Exception as e:
-            print("Unexpected exception caught during testing: "+str(e))
+            print("Unexpected exception caught during testing: " + str(e))
             traceback.print_tb(sys.exc_info()[2])
 
         if not self.options.nocleanup:
@@ -133,7 +150,6 @@ class BitcoinTestFramework(object):
 
         if success:
             print("Tests successful")
-            sys.exit(0)
         else:
             print("Failed")
-            sys.exit(1)
+
