@@ -12,6 +12,11 @@ python test_one_step_trades.py --clearcache
 python run_tests.py
 ```
 
+### [python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc)
+Git subtree of [https://github.com/jgarzik/python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc).
+Changes to python-bitcoinrpc should be made upstream, and then
+pulled here using git subtree.
+
 ### [test_exodus_purchase.py](test_exodus_purchase.py)
 Simulates the initial redemption of Bitcoin to Mastercoin
 as well as Simple Sends.
@@ -134,4 +139,20 @@ Options:
   --tracerpc       print out all RPC calls as they are made
   --verbose        provide additional runtime information of common calls
 
+```
+
+Potential setup route
+=====================
+
+```
+git clone https://github.com/mastercoin-MSC/mastercore.git
+cd mastercore/
+git checkout mscore-0.0.9
+./autogen.sh
+./configure
+make
+cd qa/
+git clone https://github.com/dexX7/mastercore-rpc-tests.git
+cd mastercore-rpc-tests/
+python run_tests.py
 ```
