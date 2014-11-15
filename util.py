@@ -105,7 +105,7 @@ def initialize_chain(test_dir, distinct_miner):
         for i in range(4):
             url = "http://rt:rt@127.0.0.1:%d" % (rpc_port(i),)
             try:
-                rpcs.append(AuthServiceProxy(url))
+                rpcs.append(AuthServiceProxy(url, None, 60))
             except:
                 sys.stderr.write("Error connecting to " + url + "\n")
                 sys.exit(1)
@@ -128,15 +128,26 @@ def initialize_chain(test_dir, distinct_miner):
         stop_nodes(rpcs)
         wait_bitcoinds()
         for i in range(4):
-            os.remove(log_filename("cache", i, "debug.log"))
-            os.remove(log_filename("cache", i, "db.log"))
-            os.remove(log_filename("cache", i, "peers.dat"))
-            os.remove(log_filename("cache", i, "mastercore.log"))
-            os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))
-            shutil.rmtree(log_filename("cache", i, "MP_persist"))
-            shutil.rmtree(log_filename("cache", i, "MP_spinfo"))
-            shutil.rmtree(log_filename("cache", i, "MP_tradelist"))
-            shutil.rmtree(log_filename("cache", i, "MP_txlist"))
+            if not os.path.isdir("cache"):
+                continue
+            if os.path.isfile(log_filename("cache", i, "db.log")):
+                os.remove(log_filename("cache", i, "db.log"))
+            if os.path.isfile(log_filename("cache", i, "debug.log")):
+                os.remove(log_filename("cache", i, "debug.log"))
+            if os.path.isfile(log_filename("cache", i, "mastercore.log")):
+                os.remove(log_filename("cache", i, "mastercore.log"))
+            if os.path.isfile(log_filename("cache", i, "peers.dat")):
+                os.remove(log_filename("cache", i, "peers.dat"))            
+            if os.path.isfile(log_filename("cache", i, "temp-ok-to-remove.log")):
+                os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))            
+            if os.path.isdir(log_filename("cache", i, "MP_persist")):
+                shutil.rmtree(log_filename("cache", i, "MP_persist"))
+            if os.path.isdir(log_filename("cache", i, "MP_spinfo")):
+                shutil.rmtree(log_filename("cache", i, "MP_spinfo"))
+            if os.path.isdir(log_filename("cache", i, "MP_tradelist")):    
+                shutil.rmtree(log_filename("cache", i, "MP_tradelist"))
+            if os.path.isdir(log_filename("cache", i, "MP_txlist")):
+                shutil.rmtree(log_filename("cache", i, "MP_txlist"))
 
     for i in range(4):
         from_dir = os.path.join("cache", "node" + str(i))
@@ -183,7 +194,7 @@ def start_node(i, path, extra_args=None, rpchost=None):
                           ["-rpcwait", "getblockcount"], stdout=devnull)
     devnull.close()
     url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
-    proxy = AuthServiceProxy(url)
+    proxy = AuthServiceProxy(url, None, 60)
     proxy.url = url  # store URL on proxy for info
     return proxy
 
