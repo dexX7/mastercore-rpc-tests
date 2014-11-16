@@ -30,6 +30,9 @@ Tests the creation of smart properties via the RPC call
 ### [test_p2sh.py](test_p2sh.py)
 Tests sending and receiving tokens via script-hash destinations.
 
+### [test_invalid_dex_txs.py](test_invalid_dex_txs.py)
+Tests invalidation and rejection of transactions in the context of the distributed exchange.
+
 ### [test_one_step_trades.py](test_one_step_trades.py)
 Tests the distributed exchange.
 
