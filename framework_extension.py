@@ -2,6 +2,11 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+# Add python-bitcoinrpc to module search path:
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "python-bitcoinrpc"))
+
 from bitcoinrpc.authproxy import JSONRPCException
 from framework_base import BitcoinTestFramework
 from framework_info import TestInfo
