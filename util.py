@@ -84,23 +84,26 @@ def initialize_datadir(path, n):
     return datadir
 
 
-def initialize_chain(test_dir, distinct_miner):
+def initialize_chain(test_dir, distinct_miner=True, omit_output=False):
     """
     Create (or copy from cache) a 200-block-long chain and
     4 wallets.
     """
     if not os.path.isdir(os.path.join("cache", "node0")):
-        devnull = open("/dev/null", "w+")
+        devnull = None
+        if omit_output:
+            devnull = open("/dev/null", "w+")
         # Create cache directories, run mastercoreds:
         for i in range(4):
             datadir = initialize_datadir("cache", i)
             args = [os.getenv("MASTERCORED", "mastercored"), "-keypool=1", "-datadir=" + datadir, "-discover=0"]
             if i > 0:
                 args.append("-connect=127.0.0.1:" + str(p2p_port(0)))
-            bitcoind_processes[i] = subprocess.Popen(args)
+            bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
             subprocess.check_call([os.getenv("MASTERCORECLI", "mastercore-cli"), "-datadir=" + datadir,
                                    "-rpcwait", "getblockcount"], stdout=devnull)
-        devnull.close()
+        if devnull is not None:
+            devnull.close()
         rpcs = []
         for i in range(4):
             url = "http://rt:rt@127.0.0.1:%d" % (rpc_port(i),)
@@ -179,7 +182,7 @@ def _rpchost_to_args(rpchost):
     return rv
 
 
-def start_node(i, path, extra_args=None, rpchost=None):
+def start_node(i, path, extra_args=None, rpchost=None, omit_output=False):
     """
     Start a mastercored and return RPC connection to it
     """
@@ -187,25 +190,28 @@ def start_node(i, path, extra_args=None, rpchost=None):
     args = [os.getenv("MASTERCORED", "mastercored"), "-datadir=" + datadir, "-keypool=1", "-discover=0"]
     if extra_args is not None:
         args.extend(extra_args)
-    bitcoind_processes[i] = subprocess.Popen(args)
-    devnull = open("/dev/null", "w+")
+    devnull = None
+    if omit_output:
+        devnull = open("/dev/null", "w+")
+    bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
     subprocess.check_call([os.getenv("MASTERCORECLI", "mastercore-cli"), "-datadir=" + datadir] +
                           _rpchost_to_args(rpchost) +
                           ["-rpcwait", "getblockcount"], stdout=devnull)
-    devnull.close()
+    if devnull is not None:
+        devnull.close()
     url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
     proxy = AuthServiceProxy(url, None, 60)
     proxy.url = url  # store URL on proxy for info
     return proxy
 
 
-def start_nodes(num_nodes, path, extra_args=None, rpchost=None):
+def start_nodes(num_nodes, path, extra_args=None, rpchost=None, omit_output=False):
     """
     Start multiple mastercoreds, return RPC connections to them
     """
     if extra_args is None:
         extra_args = [None for i in range(num_nodes)]
-    return [start_node(i, path, extra_args[i], rpchost) for i in range(num_nodes)]
+    return [start_node(i, path, extra_args[i], rpchost, omit_output) for i in range(num_nodes)]
 
 
 def log_filename(path, n_node, logname):

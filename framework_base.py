@@ -34,10 +34,10 @@ class BitcoinTestFramework(object):
 
     def setup_chain(self):
         print("Initializing test directory " + self.options.tmpdir)
-        initialize_chain(self.options.tmpdir, self.options.distinct_miner)
+        initialize_chain(self.options.tmpdir, self.options.distinct_miner, self.options.omit_output)
 
     def setup_network(self, split=False):
-        self.nodes = start_nodes(4, self.options.tmpdir)
+        self.nodes = start_nodes(4, self.options.tmpdir, omit_output=self.options.omit_output)
 
         # Connect the nodes as a "chain".  This allows us
         # to split the network between nodes 1 and 2 to get
@@ -93,6 +93,8 @@ class BitcoinTestFramework(object):
                           help="if enabled, mine only with first node, otherwise use all")
         parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
                           help="leave mastercored's and test.* regtest datadir on exit or error")
+        parser.add_option("--omitstdout", dest="omit_output", default=False, action="store_true",
+                          help="redirect standard output of nodes to /dev/null")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="source directory containing mastercored/mastercore-cli (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
