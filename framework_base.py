@@ -117,7 +117,7 @@ class BitcoinTestFramework(object):
 
         check_json_precision()
 
-        success = False
+        self.success = False
         try:
             if self.options.clearcache and os.path.isdir("cache"):
                 print("Clear cache")
@@ -130,7 +130,7 @@ class BitcoinTestFramework(object):
 
             self.run_test()
 
-            success = True
+            self.success = True
 
         except JSONRPCException as e:
             print("JSONRPC error: " + e.error['message'])
@@ -148,8 +148,8 @@ class BitcoinTestFramework(object):
             wait_bitcoinds()
             shutil.rmtree(self.options.tmpdir)
 
-        if success:
-            print("Tests successful")
+        test_name = self.__class__.__name__
+        if self.success:
+            print(test_name + " successful")
         else:
-            print("Failed")
-
+            print(test_name + " failed")
