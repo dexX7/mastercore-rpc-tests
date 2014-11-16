@@ -129,16 +129,19 @@ Usage: run_tests.py [options]
 
 Options:
   -h, --help       show this help message and exit
-  --clearcache     clear cache on startup
+  --clearcache     clear cache on startup (default: false)
   --distinctminer  if enabled, mine only with first node, otherwise use all
+                   (default: true)
   --nocleanup      leave mastercored's and test.* regtest datadir on exit or
-                   error
+                   error (default: false)
+  --omitstdout     redirect standard output of nodes to /dev/null (default:
+                   true)
   --srcdir=SRCDIR  source directory containing mastercored/mastercore-cli
                    (default: ../../src)
   --tmpdir=TMPDIR  root directory for temporary datadirs
-  --tracerpc       print out all RPC calls as they are made
+  --tracerpc       print out all RPC calls as they are made (default: false)
   --verbose        provide additional runtime information of common calls
-
+                   (default: true)
 ```
 
 Potential setup route

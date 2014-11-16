@@ -88,21 +88,21 @@ class BitcoinTestFramework(object):
 
         parser = optparse.OptionParser(usage="%prog [options]")
         parser.add_option("--clearcache", dest="clearcache", default=False, action="store_true",
-                          help="clear cache on startup")
+                          help="clear cache on startup (default: false)")
         parser.add_option("--distinctminer", dest="distinct_miner", default=True, action="store_true",
-                          help="if enabled, mine only with first node, otherwise use all")
+                          help="if enabled, mine only with first node, otherwise use all (default: true)")
         parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
-                          help="leave mastercored's and test.* regtest datadir on exit or error")
-        parser.add_option("--omitstdout", dest="omit_output", default=False, action="store_true",
-                          help="redirect standard output of nodes to /dev/null")
+                          help="leave mastercored's and test.* regtest datadir on exit or error (default: false)")
+        parser.add_option("--omitstdout", dest="omit_output", default=True, action="store_true",
+                          help="redirect standard output of nodes to /dev/null (default: true)")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="source directory containing mastercored/mastercore-cli (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
                           help="root directory for temporary datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
-                          help="print out all RPC calls as they are made")
+                          help="print out all RPC calls as they are made (default: false)")
         parser.add_option("--verbose", dest="verbose", default=True, action="store_true",
-                          help="provide additional runtime information of common calls")
+                          help="provide additional runtime information of common calls (default: true)")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
