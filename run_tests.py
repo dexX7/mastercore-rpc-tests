@@ -13,5 +13,5 @@ if __name__ == '__main__':
     ExodusPurchaseTest().main()
     PropertyCreationTest().main()
     P2SHTest().main()
-    MetaDexPlanTest().main
+    MetaDexPlanTest().main()
     OneStepTradeTest().main()
