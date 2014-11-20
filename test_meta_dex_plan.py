@@ -36,6 +36,7 @@ class MetaDexPlanTest(MasterTestFramework):
 
         self.test_invalid_version_other_than_zero()
         self.test_invalid_action()
+        self.test_invalid_action_raw()
         self.test_invalid_cancel_everything_no_active_offers()
         self.test_invalid_cancel_pair_no_active_offers()
         self.test_invalid_cancel_no_active_offers()
@@ -53,6 +54,10 @@ class MetaDexPlanTest(MasterTestFramework):
         self.test_match_divisible_at_same_unit_price()
         self.test_match_divisible_at_better_unit_price()
         self.test_match_divisible_with_three()
+        self.test_match_large_and_small_amounts()
+
+        self.test_new_orders_for_indivisible()
+        self.test_match_indivisible_at_same_unit_price()
 
         # TODO: Split into several sub test files.
 
@@ -258,6 +263,27 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a22 = '0'
         self.check_invalid('invalid action (5)', txid_a22)
 
+
+    # A21-22
+    def test_invalid_action_raw(self):
+        """Tests invalidation of orders with non-existing subaction values.
+
+        The data is submitted as raw transaction to get around RPC interface checks."""
+        entity_a1 = self.entities[1]
+
+        #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 0)
+        try:    txid_a21 = entity_a1.node.sendrawtx_MP(entity_a1.address,
+                                                       '0000001500000002000000000bebc20080000007000000000bebc20000')
+        except: txid_a21 = '0'
+        self.check_invalid('invalid action (0)', txid_a21)
+
+        #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 5)
+        try:    txid_a22 = entity_a1.node.sendrawtx_MP(entity_a1.address,
+                                                       '0000001500000002000000000bebc20080000007000000000bebc20005')
+        except: txid_a22 = '0'
+        self.check_invalid('invalid action (5)', txid_a22)
+
+    # TODO: Invalidation tests should be done via trade_MP, but also via raw transactions, to get around input filters.
 
     # A23
     def test_invalid_cancel_everything_no_active_offers(self):
@@ -1059,6 +1085,341 @@ class MetaDexPlanTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TDiv3,  '35.00000000',  '0.00000000')
         self.check_balance(entity_a2.address, TDiv3, '175.00000000',  '0.00000000')
         self.check_balance(entity_a3.address, TDiv3, '190.00000000',  '0.00000000')
+
+
+    def test_match_large_and_small_amounts(self):
+        # TODO: documentation!
+
+        entity_a2 = self.entities[2]
+        entity_a3 = self.entities[3]
+
+        # Make sure start state is as expected
+        self.check_balance(entity_a2.address, TMSC, '82.50000000',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '17.99999999',  '0.00000000')
+        self.check_balance(entity_a2.address, TIndivMax, '0', '0')
+        self.check_balance(entity_a3.address, TIndivMax, '9223372036854775807', '0')
+        self.check_balance(entity_a2.address, TDivMax, '0.00000000', '0.00000000')
+        self.check_balance(entity_a3.address, TDivMax, '92233720368.54775807', '0.00000000')
+
+        # A91
+        entity_a3.trade('92233720368.54775807', TDivMax, '0.00000001', TMSC)
+        self.generate_block()
+        #
+        #
+        # A3:   SELL   92233720368.54775807 TDivMax   for   0.00000001 TMSC  <<  added
+        #
+        #
+        self.check_balance(entity_a3.address, TDivMax, '0.00000000', '92233720368.54775807')
+
+        # A92
+        entity_a2.trade('0.00000001', TMSC, '92233720368.54775807', TDivMax)
+        self.generate_block()
+        #
+        #
+        # A3:   SELL   92233720368.54775807 TDivMax   for   0.00000001 TMSC
+        #
+        # A2:   BUY    92233720368.54775807 TDivMax   for   0.00000001 TMSC  <<  pending
+        #
+        # =>
+        #
+        # A2    BUYS   92233720368.54775807 TDivMax   for   0.00000001 TMSC
+        #
+        # =>
+        #
+        # No more open orders for TDivMax / TMSC
+        #
+        #
+
+        # Movements:
+        # A2->A3: 0.00000001 TMSC, A3->A2: 92233720368.54775807 TDivMax
+        #
+        self.check_balance(entity_a2.address, TMSC, '82.49999999',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '18.00000000',  '0.00000000')
+        self.check_balance(entity_a2.address, TDivMax, '92233720368.54775807', '0.00000000')
+        self.check_balance(entity_a3.address, TDivMax, '0.00000000', '0.00000000')
+
+        # A93
+        entity_a2.trade('92233720368.54775807', TDivMax, '0.00000001', TMSC)
+        self.generate_block()
+        #
+        #
+        # A2:   SELL   92233720368.54775807 TDivMax   for   0.00000001 TMSC  <<  added     @  1.084e-19 TMSC/TDivMax
+        #
+        #
+        self.check_balance(entity_a2.address, TDivMax, '0.00000000', '92233720368.54775807')
+
+        # A94
+        entity_a3.trade('0.00000002', TMSC, '92233720368.54775807', TDivMax)
+        self.generate_block()
+        #
+        #
+        # A2:   SELL   92233720368.54775807 TDivMax   for   0.00000001 TMSC                @  1.084e-19 TMSC/TDivMax
+        #
+        # A3:   BUY    92233720368.54775807 TDivMax   for   0.00000002 TMSC  <<  pending   @  2.168e-19 TMSC/TDivMax
+        #
+        # =>
+        #
+        # A2    BUYS   92233720368.54775807 TDivMax   for   0.00000001 TMSC                @  1.084e-19 TMSC/TDivMax
+        #
+        # =>
+        #
+        # A2:   BUY    46116860184.27387904 TDivMax   for   0.00000001 TMSC  <<  added     @  2.168e-19 TMSC/TDivMax
+        #
+        #
+
+        # Movements:
+        # A3->A2: 0.00000001 TMSC, A2->A3: 92233720368.54775807 TDivMax
+        #
+        self.check_balance(entity_a2.address, TMSC, '82.50000000',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '17.99999998',  '0.00000001')
+        self.check_balance(entity_a2.address, TDivMax, '0.00000000', '0.00000000')
+        self.check_balance(entity_a3.address, TDivMax, '92233720368.54775807', '0.00000000')
+
+        # A96
+        entity_a3.trade('9223372036854775807', TIndivMax, '0.00000001', TMSC)
+        self.generate_block()
+        #
+        #
+        # A3:   SELL   9223372036854775807 TIndivMax   for   0.00000001 TMSC  <<  added
+        #
+        #
+        self.check_balance(entity_a3.address, TIndivMax, '0', '9223372036854775807')
+
+        # A97
+        entity_a2.trade('0.00000001', TMSC, '9223372036854775807', TIndivMax)
+        self.generate_block()
+        #
+        #
+        # A3:   SELL   9223372036854775807 TIndivMax   for   0.00000001 TMSC
+        #
+        # A2:   BUY    9223372036854775807 TIndivMax   for   0.00000001 TMSC  <<  pending
+        #
+        # =>
+        #
+        # A2    BUYS   9223372036854775807 TIndivMax   for   0.00000001 TMSC
+        #
+        # =>
+        #
+        # No more open orders for TIndivMax / TMSC
+        #
+        #
+
+        # Movements:
+        # A2->A3: 0.00000001 TMSC, A3->A2: 9223372036854775807 TIndivMax
+        #
+        self.check_balance(entity_a2.address, TMSC, '82.49999999',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '17.99999999',  '0.00000001')
+        self.check_balance(entity_a2.address, TIndivMax, '9223372036854775807', '0')
+        self.check_balance(entity_a3.address, TIndivMax, '0', '0')
+
+        # A98
+        entity_a2.trade('9223372036854775807', TIndivMax, '0.00000001', TMSC)
+        self.generate_block()
+        #
+        #
+        # A2:   SELL   9223372036854775807 TIndivMax   for   0.00000001 TMSC  <<  added    @  1.084e-27 TMSC/TIndivMax
+        #
+        #
+        self.check_balance(entity_a2.address, TIndivMax, '0', '9223372036854775807')
+
+        # A99
+        entity_a3.trade('0.00000002', TMSC, '9223372036854775807', TIndivMax)
+        self.generate_block()
+        #
+        #
+        # A2:   SELL   9223372036854775807 TIndivMax   for   0.00000001 TMSC               @  1.084e-27 TMSC/TIndivMax
+        #
+        # A3:   BUY    9223372036854775807 TIndivMax   for   0.00000002 TMSC  <<  pending  @  2.168e-27 TMSC/TIndivMax
+        #
+        # =>
+        #
+        # A2    BUYS   9223372036854775807 TIndivMax   for   0.00000001 TMSC               @  1.084e-27 TMSC/TIndivMax
+        #
+        # =>
+        #
+        # A2:   BUY    4611686018427387903,5 TIndivMax   for   0.00000001 TMSC  <<  added  @  2.168e-27 TMSC/TIndivMax
+        #
+        #
+
+        # Movements:
+        # A3->A2: 0.00000001 TMSC, A2->A3: 9223372036854775807 TIndivMax
+        #
+        self.check_balance(entity_a2.address, TMSC, '82.50000000',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '17.99999997',  '0.00000002')
+        self.check_balance(entity_a2.address, TIndivMax, '0', '0')
+        self.check_balance(entity_a3.address, TIndivMax, '9223372036854775807', '0')
+
+
+    def test_new_orders_for_indivisible(self):
+        # TODO: documentation!
+
+        entity_a1 = self.entities[1]
+        #
+        # Orderbook:
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)  created with A63
+        #
+        # TODO: Is an open order here intended?
+        #
+        self.check_balance(entity_a1.address, TMSC,   '57.00000001', '67.50000000')
+        self.check_balance(entity_a1.address, TIndiv1, '995', '5')
+
+        # A103
+        entity_a1.trade('10', TIndiv1, '10.00000000', TMSC)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0 TMSC)  <<  added
+        #
+        #
+        self.check_balance(entity_a1.address, TIndiv1, '985', '15')
+
+        # A104
+        try:    txid_a104 = entity_a1.trade('10.00000001', TMSC, '10', TIndiv1, CANCEL_2)
+        except: txid_a104 = '0'
+        self.check_invalid('no active orders for that pair and price', txid_a104)
+
+        # A105
+        entity_a1.trade('3', TIndiv1, '3.00000000', TMSC)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)  <<  added
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0 TMSC)
+        #
+        #
+        self.check_balance(entity_a1.address, TIndiv1, '982', '18')
+
+        # A107
+        entity_a1.trade('1', TIndiv1, '0.00000001', TMSC)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0        TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0        TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0        TMSC)
+        # A1:   SELL    1 TIndiv1   @   0.00000001 TMSC/TIndiv1   (total:  0.00000001 TMSC)  <<  added
+        #
+        #
+        self.check_balance(entity_a1.address, TIndiv1, '981', '19')
+
+        # A108  TODO: plan shows "5.5 TIndiv1 for 6.0 TMSC @ 1.0909090909" which seems impossible
+        entity_a1.trade('6', TIndiv1, '6.00000000', TMSC)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0        TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0        TMSC)  <<  added
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0        TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0        TMSC)
+        # A1:   SELL    1 TIndiv1   @   0.00000001 TMSC/TIndiv1   (total:  0.00000001 TMSC)
+        #
+        #
+        self.check_balance(entity_a1.address, TIndiv1, '975', '25')
+
+        # A109
+        entity_a1.trade('1', TIndiv1, '0.00000001', TMSC, CANCEL_2)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0        TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0        TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0        TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0        TMSC)
+        # A1:   SELL    1 TIndiv1   @   0.00000001 TMSC/TIndiv1   (total:  0.00000001 TMSC)
+        #
+        # A1:   CANCEL  1 TIndiv1   @   0.00000001 TMSC/TIndiv1   (total:  0.00000001 TMSC)  <<  pending
+        #
+        # =>
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0 TMSC)
+        #
+        #
+        self.check_balance(entity_a1.address, TIndiv1, '976', '24')
+
+
+    def test_match_indivisible_at_same_unit_price(self):
+        # TODO: documentation!
+
+        entity_a1 = self.entities[1]
+        entity_a2 = self.entities[2]
+        entity_a3 = self.entities[3]
+
+        self.check_balance(entity_a1.address, TMSC, '57.00000001', '67.50000000')
+        self.check_balance(entity_a2.address, TMSC, '82.50000000',  '0.00000000')
+        self.check_balance(entity_a3.address, TMSC, '17.99999997',  '0.00000002')
+        self.check_balance(entity_a1.address, TIndiv1, '976', '24')
+        self.check_balance(entity_a2.address, TIndiv1,   '0',  '0')
+        self.check_balance(entity_a3.address, TIndiv1,   '0',  '0')
+
+        # A112
+        entity_a1.trade('1.00000000', TMSC, '1', TIndiv1)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)
+        # A1:   SELL   10 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total: 10.0 TMSC)
+        #
+        # A1;   BUY     1 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  1.0 TMSC)  <<  pending
+        #
+        # =>
+        #
+        # A1    BUYS    1 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  1.0 TMSC)
+        #
+        # =>
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)
+        # A1:   SELL    9 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  9.0 TMSC)  <<  updated
+        #
+        #
+
+        # Movements:
+        # A1->A1: 1.00000000 TMSC, A1->A1: 1 TIndiv1
+        #
+        self.check_balance(entity_a1.address, TMSC, '57.00000001', '67.50000000')
+        self.check_balance(entity_a1.address, TIndiv1, '977', '23')
+
+        # A113
+        entity_a2.trade('1.00000000', TMSC, '1', TIndiv1)
+        self.generate_block()
+        #
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)
+        # A1:   SELL    9 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  9.0 TMSC)
+        #
+        # A2;   BUY     1 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  1.0 TMSC)  <<  pending
+        #
+        # =>
+        #
+        # A2    BUYS    1 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  1.0 TMSC)
+        #
+        # =>
+        #
+        # A1:   SELL    5 TIndiv1   @   1.20000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    6 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  6.0 TMSC)
+        # A1:   SELL    3 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  3.0 TMSC)
+        # A1:   SELL    8 TIndiv1   @   1.00000000 TMSC/TIndiv1   (total:  8.0 TMSC)  <<  updated
+        #
+        #
+
+        # Movements:
+        # A2->A1: 1.00000000 TMSC, A1->A2: 1 TIndiv1
+        #
+        self.check_balance(entity_a1.address, TMSC, '58.00000001', '67.50000000')
+        self.check_balance(entity_a2.address, TMSC, '81.50000000',  '0.00000000')
+        self.check_balance(entity_a1.address, TIndiv1, '977', '22')
+        self.check_balance(entity_a2.address, TIndiv1,   '1',  '0')
 
 
 if __name__ == '__main__':
