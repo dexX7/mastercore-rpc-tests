@@ -21,6 +21,7 @@ import re
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
+RPC_TIMEOUT = 120
 
 def p2p_port(n):
     return 11000 + n + os.getpid() % 999
@@ -108,7 +109,7 @@ def initialize_chain(test_dir, distinct_miner=True, omit_output=False):
         for i in range(4):
             url = "http://rt:rt@127.0.0.1:%d" % (rpc_port(i),)
             try:
-                rpcs.append(AuthServiceProxy(url, None, 60))
+                rpcs.append(AuthServiceProxy(url, None, RPC_TIMEOUT))
             except:
                 sys.stderr.write("Error connecting to " + url + "\n")
                 sys.exit(1)
@@ -200,7 +201,7 @@ def start_node(i, path, extra_args=None, rpchost=None, omit_output=False):
     if devnull is not None:
         devnull.close()
     url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
-    proxy = AuthServiceProxy(url, None, 60)
+    proxy = AuthServiceProxy(url, None, RPC_TIMEOUT)
     proxy.url = url  # store URL on proxy for info
     return proxy
 
