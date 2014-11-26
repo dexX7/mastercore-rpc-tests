@@ -48,6 +48,6 @@ class TestInfo(object):
             Decimal(fee).quantize(Decimal('0.00000001')),))
 
     @staticmethod
-    def check_balance_ok(source, expected_balance, propertyid):
+    def check_balance_ok(source, expected_balance, propertyid, expected_reserved):
         if not TestInfo.ENABLED: return
-        print('Balance of %s should be: %s SP%d ... OK' % (source, expected_balance, propertyid,))
+        print('Balance of %s should be: %s SP%d (%s SP%d reserved)... OK' % (source, expected_balance, propertyid, expected_reserved, propertyid,))

@@ -27,7 +27,7 @@ class MasterTestFramework(BitcoinTestFramework):
         NOTE: A balance of zero is assumed, if the property doesn't exist."""
         for node in self.nodes:
             self.check_balance_from(node, address, propertyid, expected_balance, expected_reserved)
-        TestInfo.check_balance_ok(address, expected_balance, propertyid)
+        TestInfo.check_balance_ok(address, expected_balance, propertyid, expected_reserved)
 
     def check_balance_from(self, from_node, address, propertyid, expected_balance='0.00000000', expected_reserved=None):
         """Tests whether the address has sufficient balance of a property
