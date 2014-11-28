@@ -1,43 +1,50 @@
 Regression tests of RPC interface
 =================================
 
-To run the tests, place this folder relative to the
-`mastercored` and `mastercore-cli` files or use `--srcdir`
-as startup parameter, pointing to [Master Core](https://github.com/mastercoin-MSC/mastercore):
+To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files 
+or use `--srcdir` as startup parameter, pointing to [Master Core](https://github.com/mastercoin-MSC/mastercore):
 
 ```bash
-python test_exodus_purchase.py --srcdir=~/mastercore/
-python test_property_creation.py --tracerpc --nocleanup
-python test_one_step_trades.py --clearcache
+~/mastercore/qa/mastercore-rpc-tests$ python test_exodus_purchase.py
+~/mastercore/qa/mastercore-rpc-tests$ python test_property_creation.py --tracerpc
+~/mastercore/qa/mastercore-rpc-tests$ python test_meta_dex_plan.py --clearcache
+~/mastercore/qa/mastercore-rpc-tests$ python run_tests.py
+```
+
+Potential setup route
+=====================
+
+```
+git clone https://github.com/mastercoin-MSC/mastercore.git
+cd mastercore/
+git checkout mscore-0.0.9
+./autogen.sh
+./configure
+make
+cd qa/
+git clone https://github.com/dexX7/mastercore-rpc-tests.git
+cd mastercore-rpc-tests/
 python run_tests.py
 ```
 
-### [python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc)
-Git subtree of [https://github.com/jgarzik/python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc).
-Changes to python-bitcoinrpc should be made upstream, and then
-pulled here using git subtree.
+Notes
+=====
 
-### [test_exodus_purchase.py](test_exodus_purchase.py)
-Simulates the initial redemption of Bitcoin to Mastercoin
-as well as Simple Sends.
-**This file shoud be used as template and starting point 
-for new tests.**
+A 200-block-regtest blockchain and wallets for four nodes
+is created the first time a regression test is run and
+is stored in the cache/ directory. Per default all blocks 
+are mined by the first node.
 
-### [test_property_creation.py](test_property_creation.py)
-Tests the creation of smart properties via the RPC call 
-`sendrawtx_MP`.
+After the first run, the cache/blockchain and wallets are
+copied into a temporary directory and used as the initial
+test state. Temporary files are deleted afterwards, unless
+explicitly chosen not to via `--nocleanup`.
 
-### [test_p2sh.py](test_p2sh.py)
-Tests sending and receiving tokens via script-hash destinations.
-
-### [test_meta_dex_plan.py](test_meta_dex_plan.py)
-Tests invalidation and rejection of invalid commands and transactions, creation of new orders with divisible units, matching and execution of offers at the same unit price, matching and execution of offers at a better unit price and execution of offers with three matches.
-
-### [test_one_step_trades.py](test_one_step_trades.py)
-Tests the distributed exchange.
-
-### [run_tests.py](run_tests.py)
-Executes all tests that are currently available.
+The cache can be cleared on startup with `--clearcache`.
+This might be required, when significant changes in the initial
+parsing phase are made. Master Core specific data stored in 
+`MP_persist`, `MP_spinfo`, `MP_tradelist` and `MP_txlist` is
+generally not reused and created from the ground up.
 
 Usage and new tests
 ===================
@@ -105,25 +112,6 @@ by `python test_purchase.py --srcdir=/path-to-src-dir-with-mastercored`.
 
 ... a continuation of this can be found in [test_exodus_purchase.py](test_exodus_purchase.py).
 
-Notes
-=====
-
-A 200-block-regtest blockchain and wallets for four nodes
-is created the first time a regression test is run and
-is stored in the cache/ directory. Per default all blocks 
-are mined by the first node.
-
-After the first run, the cache/blockchain and wallets are
-copied into a temporary directory and used as the initial
-test state. Temporary files are deleted afterwards, unless
-explicitly chosen not to via `--nocleanup`.
-
-The cache can be cleared on startup with `--clearcache`.
-This might be required, when significant changes in the initial
-parsing phase are made. Master Core specific data stored in 
-`MP_persist`, `MP_spinfo`, `MP_tradelist` and `MP_txlist` is
-generally not reused and created from the ground up.
-
 Startup options
 ===============
 
@@ -147,18 +135,47 @@ Options:
                    (default: true)
 ```
 
-Potential setup route
-=====================
+File overview
+=============
 
-```
-git clone https://github.com/mastercoin-MSC/mastercore.git
-cd mastercore/
-git checkout mscore-0.0.9
-./autogen.sh
-./configure
-make
-cd qa/
-git clone https://github.com/dexX7/mastercore-rpc-tests.git
-cd mastercore-rpc-tests/
-python run_tests.py
-```
+### [python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc)
+Git subtree of [https://github.com/jgarzik/python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc).
+Changes to python-bitcoinrpc should be made upstream, and then
+pulled here using git subtree.
+
+### [test_exodus_purchase.py](test_exodus_purchase.py)
+Simulates the initial redemption of Bitcoin to Mastercoin
+as well as Simple Sends.
+**This file shoud be used as template and starting point 
+for new tests.**
+
+### [test_property_creation.py](test_property_creation.py)
+Tests the creation of smart properties via the RPC call sendrawtx_MP.
+
+### [test_p2sh.py](test_p2sh.py)
+Tests sending and receiving tokens via script-hash destinations.
+
+### [test_meta_dex_plan.py](test_meta_dex_plan.py)
+Tests invalidation and rejection of invalid commands and transactions, creation of new orders with divisible 
+units, matching and execution of offers at the same unit price, matching and execution of offers at a better 
+unit price and execution of offers with three matches.
+
+### [test_cancel_at_price.py](test_cancel_at_price.py)
+Tests the command "cancel-at-price" of the token exchange and the valid cancellation of several offers.
+
+### [test_cancel_everything.py](test_cancel_everything.py)
+Tests the effects of valid "cancel-everything" commands of the token exchange within the same ecosystem.
+
+### [test_cancel_everything_values.py](test_cancel_everything_values.py)
+Tests if the property values of the "cancel-everything" command of the token exchange are ignored. This 
+is tested by providing raw transactions and via the RPC interface.
+
+### [test_cancel_everything_scope.py](test_cancel_everything_scope.py)
+Tests the scope of the "cancel-everything" command of the token exchange and if it's effects are limited to 
+the ecosystem they are executed in.
+
+### [test_dex_side_effects.py](test_dex_side_effects.py)
+Tests side effects and interferences of the traditional and token exchange.
+
+### [run_tests.py](run_tests.py)
+Executes all tests that are currently available.

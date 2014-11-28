@@ -272,7 +272,8 @@ class MetaDexPlanTest(MasterTestFramework):
         entity_a1 = self.entities[1]
 
         #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 0)
-        try:    txid_a21 = entity_a1.node.sendrawtx_MP(entity_a1.address,
+        try:    txid_a21 = entity_a1.node.sendrawtx_MP(entity_a1.address,  # TODO: FIXME -- is empty
+        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))
                                                        '0000001500000002000000000bebc20080000007000000000bebc20000')
         except: txid_a21 = '0'
         self.check_invalid('invalid action (0)', txid_a21)

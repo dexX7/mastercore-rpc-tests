@@ -152,6 +152,8 @@ class BitcoinTestFramework(object):
 
         test_name = self.__class__.__name__
         if self.success:
-            print(test_name + " successful")
+            print(test_name + " ... successful")
+            return 0
         else:
-            print(test_name + " failed")
+            print(test_name + " ... failed")
+            return 1
