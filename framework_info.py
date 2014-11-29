@@ -54,6 +54,12 @@ class TestInfo(object):
         source, expected_balance, propertyid, expected_reserved, propertyid,))
 
     @staticmethod
+    def check_orderbook_count_ok(expected_count, property_a, property_b):
+        if not TestInfo.ENABLED: return
+        print('Number of offers found by getorderbook_MP(SP%s, SP%s) should be: %d... OK' % (
+            str(property_a), str(property_b), int(expected_count),))
+
+    @staticmethod
     def log(message):
         if not TestInfo.ENABLED: return
         print(str(message))

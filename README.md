@@ -163,6 +163,10 @@ unit price and execution of offers with three matches.
 ### [test_cancel_at_price.py](test_cancel_at_price.py)
 Tests the command "cancel-at-price" of the token exchange and the valid cancellation of several offers.
 
+### [test_cancel_pair_and_lookup.py](test_cancel_pair_and_lookup.py)
+Tests creation of several offers and cancellation with the "cancel-pair" command as well as the appearance of 
+offers in the orderbook provided by RPC call getorderbook_MP.
+
 ### [test_cancel_everything.py](test_cancel_everything.py)
 Tests the effects of valid "cancel-everything" commands of the token exchange within the same ecosystem.
 

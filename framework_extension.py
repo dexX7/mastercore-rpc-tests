@@ -45,3 +45,16 @@ class MasterTestFramework(BitcoinTestFramework):
         if expected_reserved != balance['reserved'] and expected_reserved is not None:
             raise AssertionError('reserved balance returned by getbalance_MP for SP%d: %s, expected: %s' % (
                 propertyid, balance['reserved'], expected_reserved), )
+
+    def check_orderbook_count(self, expected_count, property_a, property_b = None):
+        """Tests whether the number of offers of the provided currency-pair is in the orderbook"""
+        if property_b is None:
+            getorderbook_response = self.nodes[0].getorderbook_MP(property_a)
+        else:
+            getorderbook_response = self.nodes[0].getorderbook_MP(property_a, property_b)
+        offers_count = len(getorderbook_response)
+        if expected_count != offers_count:
+            TestInfo.log(getorderbook_response)
+            raise AssertionError('number of offers found by getorderbook_MP(SP%s, SP%s): %d, expected: %d' % (
+            str(property_a), str(property_b), int(offers_count), int(expected_count),))
+        TestInfo.check_orderbook_count_ok(expected_count, property_a, property_b)
