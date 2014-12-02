@@ -42,8 +42,17 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         self.test_orderbook_with_one_main_property()
         self.test_orderbook_with_multiple_main_properties()
         self.test_orderbook_with_multiple_test_properties()
-        self.test_lookup_primary_first()     # TODO: clarify, if inverse lookup is desired
-        self.test_lookup_secondary_first()   # TODO: clarify, if inverse lookup is desired
+        self.test_lookup_primary_first()
+        self.test_lookup_secondary_first()
+        self.test_cancel_pair_msc_indiv_sane_sane()
+        self.test_cancel_pair_msc_indiv_zero_sane()
+        self.test_cancel_pair_msc_indiv_sane_zero()
+        self.test_cancel_pair_msc_indiv_zero_zero()
+        self.test_cancel_pair_indiv_msc_sane_sane()
+        self.test_cancel_pair_indiv_msc_zero_sane()
+        self.test_cancel_pair_indiv_msc_sane_zero()
+        self.test_cancel_pair_indiv_msc_zero_zero()
+        self.test_cancel_pair_msc_div_sane_sane()
         self.test_cancel_pair_of_several_combinations()
 
 
@@ -370,8 +379,7 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         1. Orderbook should be empty
         2. A1 starts with 50.0 TMSC
         3. A1 offers TMSC for TIndiv1
-        4. Check orderbook with inverted currency pair (disabled)
-        5. Cleanup (cancel-pair)
+        4. Cleanup (cancel-pair)
 
         After this test A1 should have the same balance as at the beginning."""
         entity_a1 = self.entities[1]
@@ -390,12 +398,7 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         self.check_orderbook_count(2, TMSC)
         self.check_orderbook_count(2, TMSC, TIndiv1)
 
-        # 4. Check orderbook with inverted currency pair
-        # TODO: uncomment, if inverse lookup is desired
-        # self.check_orderbook_count(1, TIndiv1)
-        # self.check_orderbook_count(1, TIndiv1, TMSC)
-
-        # 5. Cleanup
+        # 4. Cleanup
         entity_a1.trade('9000', TIndiv1, '9000.00000000', TMSC, CANCEL_3)
         entity_a1.trade('9000000.00000000', TMSC, '9000', TIndiv1, CANCEL_3)
         self.generate_block()
@@ -410,12 +413,9 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         1. Orderbook should be empty
         2. A1 starts with 50.0 TDiv1
         3. A1 offers TDiv1 for TMSC
-        4. Check orderbook with inverted currency pair (disabled)
-        5. Cleanup (cancel-pair)
+        4. Cleanup (cancel-pair)
 
         After this test A1 should have the same balance as at the beginning."""
-
-        # TODO: clarify, if inverse lookup is desired
 
         entity_a1 = self.entities[1]
 
@@ -433,19 +433,274 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         self.check_orderbook_count(2, TDiv1)
         self.check_orderbook_count(2, TDiv1, TMSC)
 
-        # 4. Check orderbook with inverted currency pair
-        # TODO: uncomment, if inverse lookup is desired
-        # self.check_orderbook_count(2, TMSC)
-        # self.check_orderbook_count(2, TMSC, TDiv1)
-
         # 5. Cleanup
         entity_a1.trade('0.00000001', TDiv1, '0.00000001', TMSC, CANCEL_3)
         entity_a1.trade('0.00000001', TMSC, '0.00000001', TDiv1, CANCEL_3)
         self.generate_block()
         self.check_orderbook_count(0, TMSC)
         self.check_orderbook_count(0, TIndiv1)
-
         self.check_balance(entity_a1.address, TDiv1, '50.00000000', '0.00000000')
+
+
+    def test_cancel_pair_msc_indiv_sane_sane(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50.0 MSC
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+        # 3. A1 offers MSC for MIndiv1
+        entity_a1.trade('15.00000000', MSC, '15', MIndiv1, ADD_1)
+        entity_a1.trade('30.00000000', MSC, '32', MIndiv1, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '5.00000000', '45.00000000')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0.00000001', MSC, '1', MIndiv1, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+
+    def test_cancel_pair_msc_indiv_zero_sane(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50.0 MSC
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+        # 3. A1 offers MSC for MIndiv1
+        entity_a1.trade('15.00000000', MSC, '15', MIndiv1, ADD_1)
+        entity_a1.trade('30.00000000', MSC, '32', MIndiv1, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '5.00000000', '45.00000000')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0.00000000', MSC, '1', MIndiv1, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+
+    def test_cancel_pair_msc_indiv_sane_zero(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50.0 MSC
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+        # 3. A1 offers MSC for MIndiv1
+        entity_a1.trade('15.00000000', MSC, '15', MIndiv1, ADD_1)
+        entity_a1.trade('30.00000000', MSC, '32', MIndiv1, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '5.00000000', '45.00000000')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0.00000001', MSC, '0', MIndiv1, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+
+    def test_cancel_pair_msc_indiv_zero_zero(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50.0 MSC
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+        # 3. A1 offers MSC for MIndiv1
+        entity_a1.trade('15.00000000', MSC, '15', MIndiv1, ADD_1)
+        entity_a1.trade('30.00000000', MSC, '32', MIndiv1, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '5.00000000', '45.00000000')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0.00000000', MSC, '0', MIndiv1, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MSC, MIndiv1)
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+
+    def test_cancel_pair_indiv_msc_sane_sane(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50 MIndiv1
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+        # 3. A1 offers MIndiv1 for MIndiv1
+        entity_a1.trade('15', MIndiv1, '15.00000000', MSC, ADD_1)
+        entity_a1.trade('30', MIndiv1, '32.00000000', MSC, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '5', '45')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('1', MIndiv1, '0.00000001', MSC, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+
+    def test_cancel_pair_indiv_msc_zero_sane(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50 MIndiv1
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+        # 3. A1 offers MIndiv1 for MIndiv1
+        entity_a1.trade('15', MIndiv1, '15.00000000', MSC, ADD_1)
+        entity_a1.trade('30', MIndiv1, '32.00000000', MSC, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '5', '45')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0', MIndiv1, '0.00000001', MSC, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+
+    def test_cancel_pair_indiv_msc_sane_zero(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50 MIndiv1
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+        # 3. A1 offers MIndiv1 for MIndiv1
+        entity_a1.trade('15', MIndiv1, '15.00000000', MSC, ADD_1)
+        entity_a1.trade('30', MIndiv1, '32.00000000', MSC, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '5', '45')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('1', MIndiv1, '0.00000000', MSC, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+
+    def test_cancel_pair_indiv_msc_zero_zero(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MIndiv1)
+
+        # 2. A1 starts with 50 MIndiv1
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+        # 3. A1 offers MIndiv1 for MIndiv1
+        entity_a1.trade('15', MIndiv1, '15.00000000', MSC, ADD_1)
+        entity_a1.trade('30', MIndiv1, '32.00000000', MSC, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '5', '45')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0', MIndiv1, '0.00000000', MSC, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MIndiv1, MSC)
+        self.check_balance(entity_a1.address, MIndiv1, '50', '0')
+
+
+    def test_cancel_pair_msc_div_sane_sane(self):
+        """
+        1. Orderbook should be empty
+        2. ...
+
+        After this test A1 should have the same balance as at the beginning."""
+        entity_a1 = self.entities[1]
+
+        # 1. Orderbook should be empty
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, MDiv1)
+
+        # 2. A1 starts with 50.0 MSC
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
+
+        # 3. A1 offers MSC for MIndiv1
+        entity_a1.trade('15.00000000', MSC, '15.00000000', MDiv1, ADD_1)
+        entity_a1.trade('30.00000000', MSC, '32.00000000', MDiv1, ADD_1)
+        self.generate_block()
+        self.check_orderbook_count(2, MSC, MDiv1)
+        self.check_balance(entity_a1.address, MSC, '5.00000000', '45.00000000')
+
+        # 5. A1 cancels with cancel-pair
+        txid = entity_a1.trade('0.00000001', MSC, '0.00000001', MDiv1, CANCEL_3)
+        self.generate_block()
+        self.check_orderbook_count(0, MSC, MDiv1)
+        self.check_balance(entity_a1.address, MSC, '50.00000000', '0.00000000')
 
 
     def test_cancel_pair_of_several_combinations(self):
