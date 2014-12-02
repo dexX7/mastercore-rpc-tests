@@ -15,10 +15,10 @@ from framework_info import TestInfo
 class MasterTestFramework(BitcoinTestFramework):
     """Test framework extension for Master Core"""
 
-    def generate_block(self, node=0):
+    def generate_block(self, node=0, num=1):
         """Generates a new block and synchronizes all nodes"""
         self.sync_all()
-        self.nodes[node].setgenerate(True, 1)
+        self.nodes[node].setgenerate(True, num)
         self.sync_all()
 
     def check_balance(self, address, propertyid=1, expected_balance='0.00000000', expected_reserved=None):

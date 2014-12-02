@@ -54,6 +54,32 @@ class TestEntity(object):
         txid = self.node.sendrawtransaction(signresult['hex'], True)
         return txid, signresult['hex']
 
+
+    def pay_for_offer(self, destination=None, amount=0.0, fee=0.0001, addr_filter=[], min_conf=0, max_conf=999999):
+        TestInfo.send_bitcoins(self, 'mpexoDuSkGGqvqrkrjiFng38QPkJQVFyqv', fee, fee, addr_filter, min_conf, max_conf)
+        TestInfo.send_bitcoins(self, destination, amount, fee, addr_filter, min_conf, max_conf)
+        utxo = self.node.listunspent(min_conf, max_conf, addr_filter)
+        inputs = []
+        outputs = {}
+        total_in = Decimal('0.00000000')
+        while len(utxo) > 0:
+            t = utxo.pop()
+            total_in += t['amount']
+            inputs.append({'txid': t['txid'], 'vout': t['vout'], 'address': t['address']})
+        total_out = Decimal(amount + fee + fee)
+        if total_in < total_out:
+            raise RuntimeError('Insufficient funds: need %d, have %d' % (total_out, total_in))
+        change = Decimal(total_in - total_out)
+        if destination is not None and amount > 0.0:
+            outputs['mpexoDuSkGGqvqrkrjiFng38QPkJQVFyqv'] = Decimal(fee).quantize(Decimal('0.00000001'))
+            outputs[destination] = Decimal(amount).quantize(Decimal('0.00000001'))
+        if change > 0.0:
+            outputs[self.address] = Decimal(change).quantize(Decimal('0.00000001'))
+        rawtx = self.node.createrawtransaction(inputs, outputs)
+        signresult = self.node.signrawtransaction(rawtx)
+        txid = self.node.sendrawtransaction(signresult['hex'], True)
+        return txid, signresult['hex']
+
     def trade(self, amount_sale, property_sale, amount_desired, property_desired, action=1):
         TestInfo.trade(self, amount_sale, property_sale, amount_desired, property_desired, action)
         return self.node.trade_MP(self.address, amount_sale, property_sale, amount_desired, property_desired, action)

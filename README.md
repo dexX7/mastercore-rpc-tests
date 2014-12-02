@@ -181,5 +181,8 @@ the ecosystem they are executed in.
 ### [test_dex_side_effects.py](test_dex_side_effects.py)
 Tests side effects and interferences of the traditional and token exchange.
 
+### [test_traditional_dex.py](test_traditional_dex.py)
+Some basic tests for the traditional BTC-MSC exchange.
+
 ### [run_tests.py](run_tests.py)
 Executes all tests that are currently available.

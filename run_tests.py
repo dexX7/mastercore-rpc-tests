@@ -16,6 +16,8 @@ from test_meta_dex_plan import MetaDexPlanTest
 from test_p2sh import P2SHTest
 from test_property_creation import PropertyCreationTest
 
+from test_traditional_dex import TraditionalDexTest  # TODO
+
 
 all_tests = []
 exit_status = 0
@@ -57,6 +59,7 @@ if __name__ == '__main__':
     enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
     enqueue_test (MetaDexCancelEverythingScopeTest)
     enqueue_test (DexCrossEcosystemSideEffectsTest)
+    enqueue_test (TraditionalDexTest)
 
     start_tests()
     print_test_results()
