@@ -38,17 +38,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        # TODO: remove the debug information
-        # TODO: remove or replace the asserts
-        # TODO: remove warnings
-        # TODO: fix getorderbook_MP for secondary property
-        # TODO: enable skipped tests
         self.test_dex_side_effects_on_other_ecosystem()
-
         # TODO: remove the debug information
-        # TODO: remove or replace the asserts
         # TODO: remove warnings
-        # TODO: fix getorderbook_MP for secondary property
         # TODO: fix interference of token and traditional exchange
         # TODO: enable skipped tests
         self.test_dex_side_effects_on_same_ecosystem()
@@ -135,7 +127,7 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, MSC,    '63.50000000', '0.00000000')
         self.check_balance(entity_a1.address, TMSC,   '63.50000000', '0.00000000')
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000', '0.00000000')
-        self.check_balance(entity_a1.address, TIndiv1, '0', '0')
+        self.check_balance(entity_a1.address, TIndiv1, '0',          '0')
 
 
     def show_debug_information(self):
@@ -184,14 +176,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         7. A1 cancels 10.0 TMSC for 25 TIndiv1
 
         After this test A1 should have the same balance as at the beginning."""
-
-        # TODO: remove the debug information
-        # TODO: remove or replace the asserts
-        # TODO: remove warnings
-        # TODO: fix getorderbook_MP for secondary property
-        # TODO: enable skipped tests
-
-        entity_miner = self.entities[0]
         entity_a1 = self.entities[1]
 
         # 1. A1 starts with 63.5 MSC, 63.5 TMSC, 0 TIndiv1 and 0.0 TDiv1
@@ -200,12 +184,11 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TIndiv1))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, TMSC)
+        self.check_orderbook_count(0, TIndiv1)
+        self.check_orderbook_count(0, TDiv1)
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' offers 10.00000000 MSC for 2.0 BTC')
@@ -218,12 +201,11 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 1 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TIndiv1))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
+        self.check_active_dex_offers_count(1)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, TMSC)
+        self.check_orderbook_count(0, TIndiv1)
+        self.check_orderbook_count(0, TDiv1)
 
         # 3. A1 offers 10.0 TMSC for 25 TIndiv1
         # 4.           11.5 TMSC for 0.75 TDiv1 (combined)
@@ -236,18 +218,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 1 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 2 == len(entity_miner.node.getorderbook_MP(TMSC))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TDiv1))            # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TDiv1,))    # TODO: remove warning
-
-        # TODO: remove the debug information
-        self.show_debug_information()
-
+        self.check_active_dex_offers_count(1)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(2, TMSC)
 
         # 5. A1 cancels 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' cancels 10.00000000 MSC for 2.0 BTC')
@@ -260,18 +233,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 2 == len(entity_miner.node.getorderbook_MP(TMSC))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TDiv1))            # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TDiv1,))    # TODO: remove warning
-
-        # TODO: remove the debug information
-        self.show_debug_information()
-
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(2, TMSC)
 
         # 6. A1 cancels 10.0 TMSC for 25 TIndiv1
         # 7.            11.5 TMSC for 0.75 TDiv1 (combined)
@@ -284,12 +248,11 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',          '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000', '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TIndiv1))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, TMSC)
+        self.check_orderbook_count(0, TIndiv1)
+        self.check_orderbook_count(0, TDiv1)
 
 
     def test_dex_side_effects_on_same_ecosystem(self):
@@ -305,10 +268,7 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         After this test A1 should have the same balance as at the beginning."""
 
         # TODO: remove the debug information
-        # TODO: remove or replace the asserts
         # TODO: remove warnings
-        # TODO: fix getorderbook_MP for secondary property
-        # TODO: fix interference of token and traditional exchange
         # TODO: enable skipped tests
 
         entity_miner = self.entities[0]
@@ -320,12 +280,11 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TIndiv1))
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, TMSC)
+        self.check_orderbook_count(0, TDiv1)
+        self.check_orderbook_count(0, TIndiv1)
 
         # TODO: remove the debug information
         self.show_debug_information()
@@ -340,13 +299,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 1 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(1, TMSC)
 
         # TODO: remove the debug information
         self.show_debug_information()
@@ -361,14 +316,10 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 2 == len(entity_miner.node.getorderbook_MP(TMSC))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TDiv1))            # TODO: FIXME -> is empty
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TDiv1,))    # TODO: remove warning
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(2, TMSC)
+        self.check_orderbook_count(0, TDiv1)
 
         # TODO: remove the debug information
         self.show_debug_information()
@@ -385,14 +336,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 1 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 2 == len(entity_miner.node.getorderbook_MP(TMSC))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TDiv1))            # TODO: FIXME -> is empty
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TDiv1,))    # TODO: remove warning
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
+        self.check_active_dex_offers_count(1)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(2, TMSC)
 
         # TODO: remove the debug information
         self.show_debug_information()
@@ -410,14 +356,9 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 2 == len(entity_miner.node.getorderbook_MP(TMSC))
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TDiv1))            # TODO: FIXME -> is empty
-        # assert 1 == len(entity_miner.node.getorderbook_MP(TIndiv1))          # TODO: FIXME -> is empty
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TDiv1,))    # TODO: remove warning
-        TestInfo.log('WARNING: getorderbook_MP for %d is empty' % (TIndiv1,))  # TODO: remove warning
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(2, TMSC)
 
         # TODO: remove the debug information
         self.show_debug_information()
@@ -435,12 +376,11 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
-        # TODO: remove or replace the asserts
-        assert 0 == len(entity_miner.node.getactivedexsells_MP())
-        assert 0 == len(entity_miner.node.getorderbook_MP(MSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TMSC))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TDiv1))
-        assert 0 == len(entity_miner.node.getorderbook_MP(TIndiv1))
+        self.check_active_dex_offers_count(0)
+        self.check_orderbook_count(0, MSC)
+        self.check_orderbook_count(0, TMSC)
+        self.check_orderbook_count(0, TDiv1)
+        self.check_orderbook_count(0, TIndiv1)
 
         # TODO: remove the debug information
         self.show_debug_information()

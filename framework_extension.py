@@ -58,3 +58,13 @@ class MasterTestFramework(BitcoinTestFramework):
             raise AssertionError('number of offers found by getorderbook_MP(SP%s, SP%s): %d, expected: %d' % (
             str(property_a), str(property_b), int(offers_count), int(expected_count),))
         TestInfo.check_orderbook_count_ok(expected_count, property_a, property_b)
+
+    def check_active_dex_offers_count(self, expected_count):
+        """Tests whether the number of offers on the traditional MSC/TMSC-BTC exchange can be found in the orderbook"""
+        activeoffers_response = self.nodes[0].getactivedexsells_MP()
+        offers_count = len(activeoffers_response)
+        if expected_count != offers_count:
+            TestInfo.log(activeoffers_response)
+            raise AssertionError('number of active offers found by getactivedexsells_MP: %d, expected: %d' % (
+            int(offers_count), int(expected_count),))
+        TestInfo.check_active_dex_offers_count_ok(expected_count)

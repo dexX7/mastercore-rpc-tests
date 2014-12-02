@@ -60,6 +60,11 @@ class TestInfo(object):
             str(property_a), str(property_b), int(expected_count),))
 
     @staticmethod
+    def check_active_dex_offers_count_ok(expected_count):
+        if not TestInfo.ENABLED: return
+        print('Number of active offers found by getactivedexsells_MP should be: %d... OK' % (int(expected_count),))
+
+    @staticmethod
     def log(message):
         if not TestInfo.ENABLED: return
         print(str(message))

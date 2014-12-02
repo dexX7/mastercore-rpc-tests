@@ -42,7 +42,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        #self.test_cancel_everything_with_non_existing_property_raw()
+        self.test_cancel_everything_with_non_existing_property_raw()
         # TODO: transaction invalid
         self.test_cancel_everything_with_non_existing_property_primary_raw()
         self.test_cancel_everything_all_fields_zero_raw()
