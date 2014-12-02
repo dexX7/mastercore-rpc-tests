@@ -183,7 +183,7 @@ class MetaDexCancelEverythingScopeTest(MasterTestFramework):
         entity_a1.trade('50.00000000', MSC, '50.00000000', MDiv1, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,     '50.00000000',  '0.00000000')  # SP 1
-        self.check_balance(entity_a1.address, TMSC,     '0.00000000', '50.00000000')  # SP 2
+        self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
         self.check_balance(entity_a1.address, MIndiv1, '50',           '0')           # SP 3
         self.check_balance(entity_a1.address, MDiv1,    '0.00000000',  '0.00000000')  # SP 4
         self.check_balance(entity_a1.address, TIndiv1,  '0',           '0')           # SP 2147483651
@@ -530,7 +530,7 @@ class MetaDexCancelEverythingScopeTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TDiv1,    '0.00000000', '50.00000000')  # SP 2147483655
 
         # 4. A1 cancels everything in the test ecosystem (50.0 TDiv1, 50.0 TMSC)
-        entity_a1.trade('50.00000000', TDiv1, '50.00000000', CANCEL_4)
+        entity_a1.trade('50.00000000', TDiv1, '50.00000000', TMSC, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,     '50.00000000',  '0.00000000')  # SP 1
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
