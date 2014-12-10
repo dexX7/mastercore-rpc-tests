@@ -770,7 +770,6 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         self.check_orderbook_count(6, MIndiv1, MSC)
         self.check_orderbook_count(7, TMSC, TIndiv1)
 
-        # TODO: clarify if inverted properties should be included
         self.check_orderbook_count(9, MSC)      # SP 1
         self.check_orderbook_count(9, TMSC)     # SP 2
         self.check_orderbook_count(6, MIndiv1)  # SP 3

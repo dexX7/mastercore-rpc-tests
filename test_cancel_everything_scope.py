@@ -40,17 +40,14 @@ class MetaDexCancelEverythingScopeTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        # TODO: all tests fail, because "cancel-everything" does not respect it's scope
-
-        self.test_cancel_everything_test_ecosystem_primary_primary()      # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_test_ecosystem_primary_secondary()    # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_test_ecosystem_secondary_primary()    # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_test_ecosystem_secondary_secondary()  # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_main_ecosystem_primary_primary()      # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_main_ecosystem_primary_secondary()    # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_main_ecosystem_secondary_primary()    # TODO: it cancels offers of other ecosystem
-        self.test_cancel_everything_main_ecosystem_secondary_secondary()  # TODO: it cancels offers of other ecosystem
-
+        self.test_cancel_everything_test_ecosystem_primary_primary()
+        self.test_cancel_everything_test_ecosystem_primary_secondary()
+        self.test_cancel_everything_test_ecosystem_secondary_primary()
+        self.test_cancel_everything_test_ecosystem_secondary_secondary()
+        self.test_cancel_everything_main_ecosystem_primary_primary()
+        self.test_cancel_everything_main_ecosystem_primary_secondary()
+        self.test_cancel_everything_main_ecosystem_secondary_primary()
+        self.test_cancel_everything_main_ecosystem_secondary_secondary()
 
 
     def prepare_funding(self):

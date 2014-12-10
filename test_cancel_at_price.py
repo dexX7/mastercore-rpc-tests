@@ -39,16 +39,14 @@ class MetaDexCancelAtPriceTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        # TODO: when the primary property amount to cancel is more than available, it fails
-
         self.test_cancel_of_msc_for_token()
         self.test_cancel_of_token_for_msc()
         self.test_cancel_of_tmsc_for_token()
         self.test_cancel_of_token_for_tmsc()
         self.test_cancel_of_msc_with_multiplied_amount()
         self.test_cancel_of_tmsc_with_multiplied_amount()
-        self.test_cancel_amount_more_than_msc_balance()     # TODO: "Not enough funds in user address"
-        self.test_cancel_amount_more_than_tmsc_balance()    # TODO: "Not enough funds in user address"
+        self.test_cancel_amount_more_than_msc_balance()
+        self.test_cancel_amount_more_than_tmsc_balance()
 
 
     def prepare_funding(self):
@@ -324,7 +322,7 @@ class MetaDexCancelAtPriceTest(MasterTestFramework):
         self.check_balance(entity_a1.address, MDiv1, '0.00000000',  '0.00000000')  # SP 4
 
         # 3. A1 cancels 50.0 MSC for 111.5 MDiv1 (cancel-at-price)
-        entity_a1.trade('50.00000000', MSC, '111.5', MDiv1, CANCEL_2)  # TODO: "Not enough funds in user address"
+        entity_a1.trade('50.00000000', MSC, '111.5', MDiv1, CANCEL_2)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '50.00000000',  '0.00000000')  # SP 1
         self.check_balance(entity_a1.address, MDiv1, '0.00000000',  '0.00000000')  # SP 4
@@ -350,7 +348,7 @@ class MetaDexCancelAtPriceTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
 
         # 3. A1 cancels 50.0 TMSC for 100 TIndiv1 (cancel-at-price)
-        entity_a1.trade('50.00000000', TMSC, '100', TIndiv1, CANCEL_2)  # TODO: "Not enough funds in user address"
+        entity_a1.trade('50.00000000', TMSC, '100', TIndiv1, CANCEL_2)
         self.generate_block()
         self.check_balance(entity_a1.address, TMSC,   '50.00000000',  '0.00000000')  # SP 2
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651

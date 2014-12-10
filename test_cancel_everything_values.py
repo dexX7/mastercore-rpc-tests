@@ -43,14 +43,10 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.initial_distribution()
 
         self.test_cancel_everything_with_non_existing_property_raw()
-        # TODO: transaction invalid
         self.test_cancel_everything_with_non_existing_property_primary_raw()
         self.test_cancel_everything_all_fields_zero_raw()
-        # TODO: "Property identifier does not exist (Want)" -- RPC validation
         self.test_cancel_everything_with_non_existing_property_rpc()
-        # TODO: "Property identifier does not exist (Sale)" -- RPC validation
         self.test_cancel_everything_with_non_existing_property_primary_rpc()
-        # TODO: "Invalid property identifier (Sale)" -- RPC validation
         self.test_cancel_everything_all_fields_zero_rpc()
 
 
@@ -167,19 +163,10 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
 
         # 3. A1 cancels everything in the test ecosystem (50.0 TMSC, 9000 of a non existing test property)
         TestInfo.log(entity_a1.address + ' cancels everything (50.0 TMSC, 9000 of a non existing test property)')
-        txid = entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.sendrawtx_MP(entity_a1.address,
                                            '0000001500000002000000012a05f2008000000b000000d18c2e280004')
         # entity_a1.trade('50.00000000', TMSC, '9000', TNotCreated, CANCEL_4)
         self.generate_block()
-        # TODO: remove debug information
-        TestInfo.log('\ngettradessince_MP:')
-        TestInfo.log(entity_a1.node.gettradessince_MP())
-        TestInfo.log('\ngettradehistory_MP(addr):')
-        TestInfo.log(entity_a1.node.gettradehistory_MP(entity_a1.address))
-        TestInfo.log('\ngettrade_MP(txid):')
-        TestInfo.log(entity_a1.node.gettrade_MP(txid))
-        TestInfo.log('\ngettransaction_MP(txid):')
-        TestInfo.log(entity_a1.node.gettransaction_MP(txid))
 
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
         self.check_balance(entity_a1.address, TIndiv1,  '0',           '0')           # SP 2147483651
@@ -216,16 +203,6 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
                                            '000000158000000b000000012a05f20000000002000000d18c2e280004')
         # entity_a1.trade('9000', TNotCreated, '50.00000000', TMSC, CANCEL_4)
         self.generate_block()
-        # TODO: transaction invalid
-        # TODO: remove debug information
-        TestInfo.log('\ngettradessince_MP:')
-        TestInfo.log(entity_a1.node.gettradessince_MP())
-        TestInfo.log('\ngettradehistory_MP(addr):')
-        TestInfo.log(entity_a1.node.gettradehistory_MP(entity_a1.address))
-        TestInfo.log('\ngettrade_MP(txid):')
-        TestInfo.log(entity_a1.node.gettrade_MP(txid))
-        TestInfo.log('\ngettransaction_MP(txid):')
-        TestInfo.log(entity_a1.node.gettransaction_MP(txid))
 
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
         self.check_balance(entity_a1.address, TIndiv1,  '0',           '0')           # SP 2147483651
@@ -254,13 +231,10 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         # 3. A1 cancels everything, all fields set to zero (0.0 SP0, 0.0 SP0)
         # entity_a1.trade('0.00000000', 0, '0.00000000', 0, CANCEL_4)
         TestInfo.log(entity_a1.address + ' cancels everything (0.0 SP0, 0.0 SP0)')
-        txid = entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.sendrawtx_MP(entity_a1.address,
                                            '0000001500000000000000000000000000000000000000000000000004')
         self.generate_block()
-        # TODO: transaction invalid, because first property is interpreted as bitcoin
-        # TODO: remove debug information
-        TestInfo.log('\ngettransaction_MP:')
-        TestInfo.log(entity_a1.node.gettransaction_MP(txid))
+
         self.check_balance(entity_a1.address, MSC,     '50.00000000',  '0.00000000')  # SP 1
         self.check_balance(entity_a1.address, MIndiv1, '50',           '0')           # SP 3
         self.check_balance(entity_a1.address, MDiv1,    '0.00000000',  '0.00000000')  # SP 4
@@ -291,7 +265,6 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TDiv1,   '50.00000000',  '0.00000000')  # SP 2147483655
 
         # 3. A1 cancels everything in the main ecosystem (0.0 TDiv1, 9000 of a non existing test property)
-        # TODO: FIXME -> "Property identifier does not exist (Want)"
         entity_a1.trade('0.00000000', TDiv1, '9000', TNotCreated, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
@@ -324,7 +297,6 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TDiv1,   '50.00000000',  '0.00000000')  # SP 2147483655
 
         # 3. A1 cancels everything in the main ecosystem (9000 of a non existing test property, 0.0 TDiv1)
-        # TODO: "Property identifier does not exist (Sale)"
         entity_a1.trade('9000', TNotCreated, '0.00000000', TDiv1, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
@@ -352,7 +324,6 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.check_balance(entity_a1.address, MDiv1,    '0.00000000',  '0.00000000')  # SP 4
 
         # 3. A1 cancels everything in the main ecosystem (0.0 MSC, 0.0 MDiv1)
-        # TODO: "Invalid property identifier (Sale)"
         entity_a1.trade('0.00000000', 0, '0.00000000', 0, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,     '50.00000000',  '0.00000000')  # SP 1

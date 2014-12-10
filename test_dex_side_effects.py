@@ -39,14 +39,7 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.initial_distribution()
 
         self.test_dex_side_effects_on_other_ecosystem()
-        # TODO: remove the debug information
-        # TODO: remove warnings
-        # TODO: fix interference of token and traditional exchange
-        # TODO: enable skipped tests
         self.test_dex_side_effects_on_same_ecosystem()
-
-        # TODO: remove the assertion error
-        raise AssertionError('Tests were skipped for debug purposes. See TODOs!')
 
 
     def prepare_funding(self):
@@ -128,41 +121,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TMSC,   '63.50000000', '0.00000000')
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000', '0.00000000')
         self.check_balance(entity_a1.address, TIndiv1, '0',          '0')
-
-
-    def show_debug_information(self):
-        # TODO: remove or move this
-
-        entity_miner = self.entities[0]
-        entity_a1 = self.entities[1]
-
-        TestInfo.log('\nTraditional DEx orderbook:')
-        TestInfo.log(entity_miner.node.getactivedexsells_MP())
-        TestInfo.log('\nMeta DEx orderbook for MSC:')
-        TestInfo.log(entity_miner.node.getorderbook_MP(MSC))
-        TestInfo.log('\nMeta DEx orderbook for TMSC:')
-        TestInfo.log(entity_miner.node.getorderbook_MP(TMSC))
-        TestInfo.log('\nMeta DEx orderbook for MIndiv1:')
-        TestInfo.log(entity_miner.node.getorderbook_MP(MIndiv1))
-        TestInfo.log('\nMeta DEx orderbook for MDiv1:')
-        TestInfo.log(entity_miner.node.getorderbook_MP(MDiv1))
-        TestInfo.log('\nMeta DEx orderbook for TDiv1:')
-        TestInfo.log(entity_a1.node.getorderbook_MP(MDiv1))
-        TestInfo.log('\nMeta DEx orderbook for TIndiv1:')
-        TestInfo.log(entity_a1.node.getorderbook_MP(TIndiv1))
-        TestInfo.log('\nA1 balance of MSC:')
-        TestInfo.log(entity_a1.get_balance(MSC))
-        TestInfo.log('\nA1 balance of TMSC:')
-        TestInfo.log(entity_a1.get_balance(TMSC))
-        TestInfo.log('\nA1 balance of MIndiv1:')
-        TestInfo.log(entity_a1.get_balance(MIndiv1))
-        TestInfo.log('\nA1 balance of MDiv1:')
-        TestInfo.log(entity_a1.get_balance(MDiv1))
-        TestInfo.log('\nA1 balance of TDiv1:')
-        TestInfo.log(entity_a1.get_balance(TDiv1))
-        TestInfo.log('\nA1 balance of TIndiv1:')
-        TestInfo.log(entity_a1.get_balance(TIndiv1))
-        TestInfo.log('\n----------------------------------\n')
 
 
     def test_dex_side_effects_on_other_ecosystem(self):
@@ -266,11 +224,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         7. A1 cancels 0.5 TMSC for 5000000000 TIndiv1
 
         After this test A1 should have the same balance as at the beginning."""
-
-        # TODO: remove the debug information
-        # TODO: remove warnings
-        # TODO: enable skipped tests
-
         entity_miner = self.entities[0]
         entity_a1 = self.entities[1]
 
@@ -286,10 +239,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_orderbook_count(0, TDiv1)
         self.check_orderbook_count(0, TIndiv1)
 
-        # TODO: remove the debug information
-        self.show_debug_information()
-
-
         # 2. A1 offers 0.5 TMSC for 5000000000 TIndiv1
         entity_a1.trade('0.50000000', TMSC, '5000000000', TIndiv1, ADD_1)
 
@@ -302,10 +251,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_active_dex_offers_count(0)
         self.check_orderbook_count(0, MSC)
         self.check_orderbook_count(1, TMSC)
-
-        # TODO: remove the debug information
-        self.show_debug_information()
-
 
         # 3. A1 offers 3.0 TMSC for 30.0 TDiv1
         entity_a1.trade('3.00000000', TMSC, '30.00000000', TDiv1, ADD_1)
@@ -320,10 +265,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_orderbook_count(0, MSC)
         self.check_orderbook_count(2, TMSC)
         self.check_orderbook_count(0, TDiv1)
-
-        # TODO: remove the debug information
-        self.show_debug_information()
-
 
         # 4. A1 offers 10.0 TMSC for 0.1 BTC
         TestInfo.log(entity_a1.address + ' offers 10.00000000 TMSC for 0.1 BTC')
@@ -340,10 +281,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_orderbook_count(0, MSC)
         self.check_orderbook_count(2, TMSC)
 
-        # TODO: remove the debug information
-        self.show_debug_information()
-
-
         # 5. A1 cancels 10.0 TMSC for 0.1 BTC
         TestInfo.log(entity_a1.address + ' cancels 10.00000000 TMSC for 0.1 BTC')
         entity_a1.node.sendrawtx_MP(entity_a1.address,
@@ -351,18 +288,13 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
 
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,    '63.50000000',  '0.00000000')
-        # self.check_balance(entity_a1.address, TMSC, '60.00000000',  '3.50000000')  # TODO: FIXME -> has 63.5 TMSC
-        TestInfo.log('WARNING: balance check disabled')                              # TODO: remove warning
+        self.check_balance(entity_a1.address, TMSC,   '60.00000000',  '3.50000000')
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
         self.check_active_dex_offers_count(0)
         self.check_orderbook_count(0, MSC)
         self.check_orderbook_count(2, TMSC)
-
-        # TODO: remove the debug information
-        self.show_debug_information()
-
 
         # 6. A1 cancels 3.0 TMSC for 30.0 TDiv1
         # 7.            0.5 TMSC for 5000000000 TIndiv1
@@ -371,8 +303,7 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
 
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,    '63.50000000',  '0.00000000')
-        # self.check_balance(entity_a1.address, TMSC, '63.50000000',  '0.00000000')  # TODO: FIXME -> has 67.0 TMSC
-        TestInfo.log('WARNING: balance check disabled')                              # TODO: remove warning
+        self.check_balance(entity_a1.address, TMSC,   '63.50000000',  '0.00000000')
         self.check_balance(entity_a1.address, TIndiv1, '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '0.00000000',  '0.00000000')  # SP 2147483655
 
@@ -381,9 +312,6 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
         self.check_orderbook_count(0, TMSC)
         self.check_orderbook_count(0, TDiv1)
         self.check_orderbook_count(0, TIndiv1)
-
-        # TODO: remove the debug information
-        self.show_debug_information()
 
 
 if __name__ == '__main__':
