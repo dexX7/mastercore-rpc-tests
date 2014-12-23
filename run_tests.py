@@ -15,8 +15,8 @@ from test_exodus_purchase import ExodusPurchaseTest
 from test_meta_dex_plan import MetaDexPlanTest
 from test_p2sh import P2SHTest
 from test_property_creation import PropertyCreationTest
-
-from test_traditional_dex import TraditionalDexTest  # TODO
+from test_simple_send import SimpleSendTest
+from test_traditional_dex import TraditionalDexTest
 
 
 all_tests = []
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     # TODO: create a test container
 
     enqueue_test (ExodusPurchaseTest)
+    enqueue_test (SimpleSendTest)
     enqueue_test (PropertyCreationTest)
     enqueue_test (P2SHTest)
     enqueue_test (MetaDexPlanTest)
