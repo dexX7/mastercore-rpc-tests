@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,6 +44,7 @@ class P2SHTest(MasterTestFramework):
         self.generate_block()
         self.check_balance(entity_p2sh.address, 1, '200.00000000')
         self.check_balance(entity_a2.address, 1, '0.00000000')
+
 
 if __name__ == '__main__':
     P2SHTest().main()
