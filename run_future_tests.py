@@ -53,6 +53,13 @@ if __name__ == '__main__':
     enqueue_test (SimpleSendTest)
     enqueue_test (PropertyCreationTest)
     enqueue_test (P2SHTest)
+    enqueue_test (MetaDexPlanTest)
+    enqueue_test (MetaDexCancelAtPriceTest)
+    enqueue_test (MetaDexCancelPairAndLookupTest)
+    enqueue_test (MetaDexCancelEverythingInSameEcosystemTest)
+    enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
+    enqueue_test (MetaDexCancelEverythingScopeTest)
+    enqueue_test (DexCrossEcosystemSideEffectsTest)
     enqueue_test (TraditionalDexTest)
 
     start_tests()
