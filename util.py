@@ -85,14 +85,14 @@ def initialize_datadir(path, n):
     return datadir
 
 
-def initialize_chain(test_dir, distinct_miner=True, omit_output=False):
+def initialize_chain(test_dir, showstdout=False):
     """
     Create (or copy from cache) a 200-block-long chain and
     4 wallets.
     """
     if not os.path.isdir(os.path.join("cache", "node0")):
         devnull = None
-        if omit_output:
+        if not showstdout:
             devnull = open("/dev/null", "w+")
         # Create cache directories, run mastercoreds:
         for i in range(4):
@@ -114,19 +114,9 @@ def initialize_chain(test_dir, distinct_miner=True, omit_output=False):
                 sys.stderr.write("Error connecting to " + url + "\n")
                 sys.exit(1)
 
-        if distinct_miner:
-            # Create a 200-block-long chain and node 1 gets all
-            rpcs[0].setgenerate(True, 200)
-            sync_blocks(rpcs)
-        else:
-            # Create a 200-block-long chain; each of the 4 nodes
-            # gets 25 mature blocks and 25 immature.
-            for i in range(4):
-                rpcs[i].setgenerate(True, 25)
-                sync_blocks(rpcs)
-            for i in range(4):
-                rpcs[i].setgenerate(True, 25)
-                sync_blocks(rpcs)
+        # Create a 200-block-long chain and node 1 gets all
+        rpcs[0].setgenerate(True, 200)
+        sync_blocks(rpcs)
 
         # Shut them down, and clean up cache directories:
         stop_nodes(rpcs)
@@ -143,15 +133,17 @@ def initialize_chain(test_dir, distinct_miner=True, omit_output=False):
             if os.path.isfile(log_filename("cache", i, "peers.dat")):
                 os.remove(log_filename("cache", i, "peers.dat"))            
             if os.path.isfile(log_filename("cache", i, "temp-ok-to-remove.log")):
-                os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))            
+                os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))
             if os.path.isdir(log_filename("cache", i, "MP_persist")):
                 shutil.rmtree(log_filename("cache", i, "MP_persist"))
             if os.path.isdir(log_filename("cache", i, "MP_spinfo")):
                 shutil.rmtree(log_filename("cache", i, "MP_spinfo"))
-            if os.path.isdir(log_filename("cache", i, "MP_tradelist")):    
+            if os.path.isdir(log_filename("cache", i, "MP_tradelist")):
                 shutil.rmtree(log_filename("cache", i, "MP_tradelist"))
             if os.path.isdir(log_filename("cache", i, "MP_txlist")):
                 shutil.rmtree(log_filename("cache", i, "MP_txlist"))
+            if os.path.isdir(log_filename("cache", i, "MP_stolist")):
+                shutil.rmtree(log_filename("cache", i, "MP_stolist"))
 
     for i in range(4):
         from_dir = os.path.join("cache", "node" + str(i))
@@ -183,7 +175,7 @@ def _rpchost_to_args(rpchost):
     return rv
 
 
-def start_node(i, path, extra_args=None, rpchost=None, omit_output=False):
+def start_node(i, path, extra_args=None, rpchost=None, showstdout=False):
     """
     Start a mastercored and return RPC connection to it
     """
@@ -192,7 +184,7 @@ def start_node(i, path, extra_args=None, rpchost=None, omit_output=False):
     if extra_args is not None:
         args.extend(extra_args)
     devnull = None
-    if omit_output:
+    if not showstdout:
         devnull = open("/dev/null", "w+")
     bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
     subprocess.check_call([os.getenv("MASTERCORECLI", "mastercore-cli"), "-datadir=" + datadir] +
@@ -206,13 +198,13 @@ def start_node(i, path, extra_args=None, rpchost=None, omit_output=False):
     return proxy
 
 
-def start_nodes(num_nodes, path, extra_args=None, rpchost=None, omit_output=False):
+def start_nodes(num_nodes, path, extra_args=None, rpchost=None, showstdout=False):
     """
     Start multiple mastercoreds, return RPC connections to them
     """
     if extra_args is None:
         extra_args = [None for i in range(num_nodes)]
-    return [start_node(i, path, extra_args[i], rpchost, omit_output) for i in range(num_nodes)]
+    return [start_node(i, path, extra_args[i], rpchost, showstdout) for i in range(num_nodes)]
 
 
 def log_filename(path, n_node, logname):

@@ -2,7 +2,7 @@ Regression tests of RPC interface
 =================================
 
 To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files 
-or use `--srcdir` as startup parameter, pointing to [Master Core](https://github.com/mastercoin-MSC/mastercore):
+or use `--bindir` as startup parameter, pointing to [Master Core](https://github.com/mastercoin-MSC/mastercore):
 
 ```bash
 ~/mastercore/qa/mastercore-rpc-tests$ python test_exodus_purchase.py
@@ -108,7 +108,7 @@ Tests successful
 ```
 
 In fact, this example could be saved as `test_purchase.py` and then tested 
-by `python test_purchase.py --srcdir=/path-to-src-dir-with-mastercored`.
+by `python test_purchase.py --bindir=/path-to-bin-dir-with-mastercored`.
 
 ... a continuation of this can be found in [test_exodus_purchase.py](test_exodus_purchase.py).
 
@@ -120,19 +120,16 @@ Usage: run_tests.py [options]
 
 Options:
   -h, --help       show this help message and exit
-  --clearcache     clear cache on startup (default: false)
-  --distinctminer  if enabled, mine only with first node, otherwise use all
-                   (default: true)
-  --nocleanup      leave mastercored's and test.* regtest datadir on exit or
-                   error (default: false)
-  --omitstdout     redirect standard output of nodes to /dev/null (default:
-                   true)
-  --srcdir=SRCDIR  source directory containing mastercored/mastercore-cli
-                   (default: ../../src)
-  --tmpdir=TMPDIR  root directory for temporary datadirs
-  --tracerpc       print out all RPC calls as they are made (default: false)
-  --verbose        provide additional runtime information of common calls
-                   (default: true)
+  --clearcache     Clear cache on startup (default: False)
+  --nocleanup      Leave mastercored's and test.* regtest datadir on exit or
+                   error (default: False)
+  --stdout         Show standard output of nodes, otherwise redirect to
+                   /dev/null
+  --bindir=BINDIR  Directory containing daemon and cli binaries (default:
+                   ../../src)
+  --tmpdir=TMPDIR  Root directory for temporary datadirs
+  --tracerpc       Print out all RPC calls as they are made (default: False)
+  --quiet          Hide verbose runtime information (default: False)
 ```
 
 File overview

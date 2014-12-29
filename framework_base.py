@@ -34,10 +34,10 @@ class BitcoinTestFramework(object):
 
     def setup_chain(self):
         print("Initializing test directory " + self.options.tmpdir)
-        initialize_chain(self.options.tmpdir, self.options.distinct_miner, self.options.omit_output)
+        initialize_chain(self.options.tmpdir, self.options.showstdout)
 
     def setup_network(self, split=False):
-        self.nodes = start_nodes(4, self.options.tmpdir, omit_output=self.options.omit_output)
+        self.nodes = start_nodes(4, self.options.tmpdir, showstdout=self.options.showstdout)
 
         # Connect the nodes as a "chain".  This allows us
         # to split the network between nodes 1 and 2 to get
@@ -88,34 +88,32 @@ class BitcoinTestFramework(object):
 
         parser = optparse.OptionParser(usage="%prog [options]")
         parser.add_option("--clearcache", dest="clearcache", default=False, action="store_true",
-                          help="clear cache on startup (default: false)")
-        parser.add_option("--distinctminer", dest="distinct_miner", default=True, action="store_true",
-                          help="if enabled, mine only with first node, otherwise use all (default: true)")
+                          help="Clear cache on startup (default: %default)")
         parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
-                          help="leave mastercored's and test.* regtest datadir on exit or error (default: false)")
-        parser.add_option("--omitstdout", dest="omit_output", default=True, action="store_true",
-                          help="redirect standard output of nodes to /dev/null (default: true)")
-        parser.add_option("--srcdir", dest="srcdir", default="../../src",
-                          help="source directory containing mastercored/mastercore-cli (default: %default)")
+                          help="Leave mastercored's and test.* regtest datadir on exit or error (default: %default)")
+        parser.add_option("--stdout", dest="showstdout", default=False, action="store_true",
+                          help="Show standard output of nodes, otherwise redirect to /dev/null")
+        parser.add_option("--bindir", dest="bindir", default="../../src",
+                          help="Directory containing daemon and cli binaries (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
-                          help="root directory for temporary datadirs")
+                          help="Root directory for temporary datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
-                          help="print out all RPC calls as they are made (default: false)")
-        parser.add_option("--verbose", dest="verbose", default=True, action="store_true",
-                          help="provide additional runtime information of common calls (default: true)")
+                          help="Print out all RPC calls as they are made (default: %default)")
+        parser.add_option("--quiet", dest="quiet", default=False, action="store_true",
+                          help="Hide verbose runtime information (default: %default)")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
         if self.options.trace_rpc:
             import logging
-
             logging.basicConfig(level=logging.DEBUG)
 
-        if not self.options.verbose:
+        if self.options.quiet:
             from framework_info import TestInfo
-            TestInfo.ENABLED = self.options.verbose
+            TestInfo.ENABLED = 0
 
-        os.environ['PATH'] = self.options.srcdir + ":" + os.environ['PATH']
+        if self.options.bindir:
+            os.environ['PATH'] = self.options.bindir + ":" + os.environ['PATH']
 
         check_json_precision()
 
