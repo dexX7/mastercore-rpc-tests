@@ -93,11 +93,11 @@ class SimpleSendTest(MasterTestFramework):
         self.check_balance(entity_a2.address, TMSC,   '0.00000000', '0.00000000')
 
         # 2. A1 sends 245.0 MSC and TMSC to A2 in random batches
-        self.send_many('5.00000000', MSC,  49, 0, 15)
+        self.send_many('5.00000000', TMSC,  49, 0, 15)
         self.check_balance(entity_a1.address, TMSC,   '5.00000000', '0.00000000')
         self.check_balance(entity_a2.address, TMSC, '245.00000000', '0.00000000')
 
-        self.send_many('5.00000000', TMSC, 49, 0, 25)
+        self.send_many('5.00000000',  MSC,  49, 0, 25)
         self.check_balance(entity_a1.address, MSC,    '5.00000000', '0.00000000')
         self.check_balance(entity_a2.address, MSC,  '245.00000000', '0.00000000')
 
