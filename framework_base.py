@@ -83,9 +83,14 @@ class BitcoinTestFramework(object):
         wait_bitcoinds()
         self.setup_network(False)
 
-    def main(self):
-        import optparse
+    def main(self):        
+        # during runtime change dir to the dir of the framework,
+        # because most calls assume it's executed from within the
+        # same dir
+        initial_working_dir = os.getcwd()
+        os.chdir(sys.path[0])
 
+        import optparse
         parser = optparse.OptionParser(usage="%prog [options]")
         parser.add_option("--clearcache", dest="clearcache", default=False, action="store_true",
                           help="Clear cache on startup (default: %default)")
@@ -147,6 +152,9 @@ class BitcoinTestFramework(object):
             stop_nodes(self.nodes)
             wait_bitcoinds()
             shutil.rmtree(self.options.tmpdir)
+
+        # restore initial working dir
+        os.chdir(initial_working_dir)
 
         test_name = self.__class__.__name__
         if self.success:
