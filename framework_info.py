@@ -23,6 +23,12 @@ class TestInfo(object):
             Decimal(amount).quantize(Decimal('0.00000001')), property_id, source.address, destination,)
 
     @staticmethod
+    def send_to_owners(source, property_id, amount, redeemer):
+        if not TestInfo.ENABLED: return
+        TestInfo._buffer = 'Sending %s SP%d from %s to all owners of SP%d... ' % (
+            Decimal(amount).quantize(Decimal('0.00000001')), property_id, source.address, property_id,)
+
+    @staticmethod
     def trade(source, amount_sale, property_sale, amount_desired, property_desired, action):
         if not TestInfo.ENABLED: return
         TestInfo._buffer = 'Offering (action: %d) %s SP%d from %s for %s SP%d... ' % (

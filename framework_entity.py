@@ -58,6 +58,16 @@ class TestEntity(object):
             TestInfo.Fail(e.error['message'])
         return txid
 
+    def send_to_owners(self, property_id, amount, redeemer=''):
+        TestInfo.send_to_owners(self, property_id, amount, redeemer)
+        txid = '0000000000000000000000000000000000000000000000000000000000000000'
+        try:
+            txid = self.node.sendtoowners_MP(self.address, property_id, str(amount), redeemer)
+            TestInfo.OK()
+        except JSONRPCException as e:
+            TestInfo.Fail(e.error['message'])
+        return txid
+
     def send_bitcoins(self, destination=None, amount=0.0, fee=0.0001, addr_filter=[], min_conf=0, max_conf=999999):
         TestInfo.send_bitcoins(self, destination, amount, fee, addr_filter, min_conf, max_conf)
         utxo = self.node.listunspent(min_conf, max_conf, addr_filter)
