@@ -44,6 +44,8 @@ class MetaDexCancelEverythingInSameEcosystemTest(MasterTestFramework):
         self.test_cancel_everything_with_zero_amounts()
         self.test_cancel_everything_mixed_amounts()
 
+        self.success = TestInfo.Status()
+
 
     def prepare_funding(self):
         """The miner (node 1) furthermore purchases 50000.0 MSC and 50000.0 TMSC."""

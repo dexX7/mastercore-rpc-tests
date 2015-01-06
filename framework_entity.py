@@ -2,6 +2,12 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+# Add python-bitcoinrpc to module search path:
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "python-bitcoinrpc"))
+
+from bitcoinrpc.authproxy import JSONRPCException
 from decimal import Decimal
 from framework_info import TestInfo
 
@@ -16,19 +22,40 @@ class TestEntity(object):
 
     def generate_block(self, count=1):
         TestInfo.generate_block(self, count)
-        self.node.setgenerate(True, count)
+        try:
+            self.node.setgenerate(True, count)
+            TestInfo.OK()
+        except JSONRPCException as e:
+            TestInfo.Fail(e.error['message'])
 
     def get_balance(self, property_id):
         TestInfo.get_balance(self, property_id)
-        return self.node.getbalance_MP(self.address, property_id)
+        balance = {}
+        try:
+            balance = self.node.getbalance_MP(self.address, property_id)
+            TestInfo.OK()
+        except JSONRPCException as e:
+            TestInfo.Fail(e.error['message'])
+        return balance
 
     def purchase_mastercoins(self, amount, fee=0.0001):
         TestInfo.purchase_mastercoins(self, amount, fee)
-        return self.send_bitcoins('moneyqMan7uh8FqdCA2BV5yZ8qVrc9ikLP', amount, fee, [self.address])
+        txid, raw = '0000000000000000000000000000000000000000000000000000000000000000', '00'
+        try:
+            txid, raw = self.send_bitcoins('moneyqMan7uh8FqdCA2BV5yZ8qVrc9ikLP', amount, fee, [self.address])
+            TestInfo.OK()
+        except RuntimeError as e:
+            TestInfo.Fail(e)
+        return txid, raw
 
     def send(self, destination, property_id, amount, redeemer=''):
         TestInfo.send(self, destination, property_id, amount, redeemer)
-        txid = self.node.send_MP(self.address, destination, property_id, str(amount), redeemer)
+        txid = '0000000000000000000000000000000000000000000000000000000000000000'
+        try:
+            txid = self.node.send_MP(self.address, destination, property_id, str(amount), redeemer)
+            TestInfo.OK()
+        except JSONRPCException as e:
+            TestInfo.Fail(e.error['message'])
         return txid
 
     def send_bitcoins(self, destination=None, amount=0.0, fee=0.0001, addr_filter=[], min_conf=0, max_conf=999999):
@@ -53,7 +80,6 @@ class TestEntity(object):
         signresult = self.node.signrawtransaction(rawtx)
         txid = self.node.sendrawtransaction(signresult['hex'], True)
         return txid, signresult['hex']
-
 
     def pay_for_offer(self, destination=None, amount=0.0, fee=0.0001, addr_filter=[], min_conf=0, max_conf=999999):
         TestInfo.send_bitcoins(self, 'mpexoDuSkGGqvqrkrjiFng38QPkJQVFyqv', fee, fee, addr_filter, min_conf, max_conf)
@@ -82,4 +108,10 @@ class TestEntity(object):
 
     def trade(self, amount_sale, property_sale, amount_desired, property_desired, action=1):
         TestInfo.trade(self, amount_sale, property_sale, amount_desired, property_desired, action)
-        return self.node.trade_MP(self.address, amount_sale, property_sale, amount_desired, property_desired, action)
+        txid = '0000000000000000000000000000000000000000000000000000000000000000'
+        try:
+            txid = self.node.trade_MP(self.address, amount_sale, property_sale, amount_desired, property_desired, action)
+            TestInfo.OK()
+        except JSONRPCException as e:
+            TestInfo.Fail(e.error['message'])
+        return txid

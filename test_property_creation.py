@@ -4,6 +4,7 @@
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
 
 
 class PropertyCreationTest(MasterTestFramework):
@@ -40,6 +41,8 @@ class PropertyCreationTest(MasterTestFramework):
 
         property_count_old = len(node.listproperties_MP())
 
+        TestInfo.ExpectFail()
+
         # Number of divisible tokens is zero
         try: node.sendrawtx_MP(addr, '000000320100020000000000005a65726f4469760000000000000000000000')  # ZeroDiv
         except: pass
@@ -52,12 +55,16 @@ class PropertyCreationTest(MasterTestFramework):
         try: node.sendrawtx_MP(addr, '0000003200000200000000000045636f737973330000000000000000000064')  # Ecosys0
         except: pass
 
+        TestInfo.StopExpectation()
+
         self.generate_block()
         property_count_new = len(node.listproperties_MP())
 
         if property_count_new != property_count_old:
             raise AssertionError(
                 'Number of properties should not have increased after creating a property with zero amount')
+
+        self.success = TestInfo.Status()
 
 
 if __name__ == '__main__':

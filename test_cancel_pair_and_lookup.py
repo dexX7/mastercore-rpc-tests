@@ -4,6 +4,8 @@
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
+
 
 # Helper
 
@@ -54,6 +56,8 @@ class MetaDexCancelPairAndLookupTest(MasterTestFramework):
         self.test_cancel_pair_indiv_msc_zero_zero()
         self.test_cancel_pair_msc_div_sane_sane()
         self.test_cancel_pair_of_several_combinations()
+
+        self.success = TestInfo.Status()
 
 
     def prepare_funding(self):

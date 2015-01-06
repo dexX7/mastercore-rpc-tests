@@ -6,6 +6,7 @@ from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
 from framework_info import TestInfo
 
+
 # Helper
 
 BTC = 0
@@ -43,6 +44,8 @@ class TraditionalDexTest(MasterTestFramework):
         self.test_msc_offer_accept_and_pay()
         self.test_msc_offer_accept_and_pay_multiple()
         self.test_msc_offer_accept_and_pay_multiple_with_update()
+
+        self.success = TestInfo.Status()
 
 
     def prepare_funding(self):

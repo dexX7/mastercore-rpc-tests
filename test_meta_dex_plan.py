@@ -4,6 +4,8 @@
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
+
 
 # Helper
 
@@ -60,6 +62,8 @@ class MetaDexPlanTest(MasterTestFramework):
         self.test_match_indivisible_at_same_unit_price()
 
         # TODO: Split into several sub test files.
+
+        self.success = TestInfo.Status()
 
 
     def prepare_funding(self):
@@ -223,6 +227,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         # TODO: Depreciate transaction version tests, once new version of transaction is live.
 
+        TestInfo.ExpectFail()
+
         #                    entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, ADD_1) with "version = 1"
         try:    txid_a20_1 = entity_a1.node.sendrawtx_MP(entity_a1.address,
                                                          '0001001500000002000000000bebc20080000007000000000bebc20001')
@@ -247,6 +253,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a20_4 = '0'
         self.check_invalid('transaction version > 0', txid_a20_4)
 
+        TestInfo.StopExpectation()
+
 
     # A21-22
     def test_invalid_action(self):
@@ -254,6 +262,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         The data is submitted via RPC command trade_MP."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a21 = entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 0)
         except: txid_a21 = '0'
@@ -263,6 +273,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a22 = '0'
         self.check_invalid('invalid action (5)', txid_a22)
 
+        TestInfo.StopExpectation()
+
 
     # A21-22
     def test_invalid_action_raw(self):
@@ -270,6 +282,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         The data is submitted as raw transaction to get around RPC interface checks."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 0)
         try:    txid_a21 = entity_a1.node.sendrawtx_MP(entity_a1.address,  # TODO: FIXME -- is empty
@@ -284,12 +298,17 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a22 = '0'
         self.check_invalid('invalid action (5)', txid_a22)
 
+        TestInfo.StopExpectation()
+
+
     # TODO: Invalidation tests should be done via trade_MP, but also via raw transactions, to get around input filters.
 
     # A23
     def test_invalid_cancel_everything_no_active_offers(self):
         """Tests invalidation of transactions with CANCEL-EVERYTHING command, but no active, matching offers."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a23_1 = entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, CANCEL_4)
         except: txid_a23_1 = '0'
@@ -323,11 +342,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a23_8 = '0'
         self.check_invalid('no active orders, cancel-everything, zero amounts (!), non-existing pair (!)', txid_a23_8)
 
+        TestInfo.StopExpectation()
+
 
     # A24-25
     def test_invalid_cancel_pair_no_active_offers(self):
         """Tests invalidation of transactions with CANCEL-PAIR command, but no active, matching offers."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a24 = entity_a1.trade('2.00000000', TMSC,  '2.00000000', TDiv1, CANCEL_3)
         except: txid_a24 = '0'
@@ -337,11 +360,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a25 = '0'
         self.check_invalid('no active orders for currency pair', txid_a25)
 
+        TestInfo.StopExpectation()
+
 
     # A26-27
     def test_invalid_cancel_no_active_offers(self):
         """"Tests invalidation of transactions with CANCEL command, but no active, matching offers."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a26 = entity_a1.trade('2.00000000', TDiv2, '2.00000000', TMSC,  CANCEL_2)
         except: txid_a26 = '0'
@@ -351,11 +378,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a27 = '0'
         self.check_invalid('no active orders for currency pair and price', txid_a27)
 
+        TestInfo.StopExpectation()
+
 
     # A28-29
     def test_invalid_add_same_currency(self):
         """Tests invalidation of transactions with the same property on both sides of an offer."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a28 = entity_a1.trade('1.00000000', TDiv1, '2.00000000', TDiv1, ADD_1)
         except: txid_a28 = '0'
@@ -365,11 +396,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a29 = '0'
         self.check_invalid('same currency', txid_a29)
 
+        TestInfo.StopExpectation()
+
 
     # A30-31
     def test_invalid_add_zero_amount(self):
         """Tests invalidation of offers with zero amounts."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a30 = entity_a1.trade('0.00000000', TDiv1, '1.00000000', TMSC, ADD_1)
         except: txid_a30 = '0'
@@ -379,11 +414,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a31 = '0'
         self.check_invalid('amount desired is 0.0', txid_a31)
 
+        TestInfo.StopExpectation()
+
 
     # A32-33
     def test_invalid_add_bitcoin(self):
         """Tests invalidation of offers with bitcoin."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a32 = entity_a1.trade('1.00000000', BTC,  '1.00000000', TMSC, ADD_1)
         except: txid_a32 = '0'
@@ -393,11 +432,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a33 = '0'
         self.check_invalid('property for sale is bitcoin', txid_a33)
 
+        TestInfo.StopExpectation()
+
 
     # A34-35
     def test_invalid_add_cross_ecosystem(self):
         """Tests invalidation of offers with properties that are not in the same ecosystem."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a34 = entity_a1.trade('1.00000000', MSC,   '1.00000000', TDiv1, ADD_1)
         except: txid_a34 = '0'
@@ -407,11 +450,15 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a35 = '0'
         self.check_invalid('cross ecosystem (test, main) (MSC, TDiv1)', txid_a35)
 
+        TestInfo.StopExpectation()
+
 
     # A37-40
     def test_invalid_insufficient_balance(self):
         """Tests invalidation of offers due to insufficient balance."""
         entity_a1 = self.entities[1]
+
+        TestInfo.ExpectFail()
 
         try:    txid_a37 = entity_a1.trade('1', TIndiv2, '1.00000000', TMSC, ADD_1)
         except: txid_a37 = '0'
@@ -429,6 +476,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a40 = '0'
         self.check_invalid('A1 does not have enough TDiv1', txid_a40)
 
+        TestInfo.StopExpectation()
+
 
     # A42-47
     def test_invalid_amount_too_large(self):
@@ -444,6 +493,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         # TODO: This is currently not part of the test plan where A42-47 are duplicates of A48-52.
         # TODO: StrToInt64, which is used in trade_MP, parses out-of-range amounts as 0.
+
+        TestInfo.ExpectFail()
 
         try:    txid_a42 = entity_a1.trade('0.00000001', TDiv1, '92233720368.54780000', TMSC, ADD_1)
         except: txid_a42 = '0'
@@ -469,6 +520,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a47 = '0'
         self.check_invalid('both amounts are too large', txid_a47)
 
+        TestInfo.StopExpectation()
+
 
     # A42-47
     def test_invalid_amount_too_large_raw(self):
@@ -483,6 +536,8 @@ class MetaDexPlanTest(MasterTestFramework):
         entity_a3 = self.entities[3]
 
         # TODO: This is currently not part of the test plan where A42-47 are duplicates of A48-52.
+
+        TestInfo.ExpectFail()
 
         #          entity_a1.trade('0.00000001', TDiv1, '92233720368.54780000', TMSC, ADD_1)
         txid_a42 = entity_a1.node.sendrawtx_MP(entity_a1.address,
@@ -514,6 +569,8 @@ class MetaDexPlanTest(MasterTestFramework):
                                                '0000001500000002800000000000106080000003800000000000106001')
         self.check_invalid('both amounts are too large (0x8000000000001060 TMSC, 0x8000000000001060 TIndiv1)', txid_a47)
 
+        TestInfo.StopExpectation()
+
 
     # A48-53
     def test_invalid_amount_negative(self):
@@ -523,6 +580,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         # TODO: StrToInt64, which is used in trade_MP, parses negative amounts as 0.
         # TODO: Testing of negative amounts is basically also tested in test_invalid_negative_zero().
+
+        TestInfo.ExpectFail()
 
         try:    txid_a48 = entity_a1.trade('0.00000001', TDiv1, '-0.00000001', TMSC, ADD_1)
         except: txid_a48 = '0'
@@ -548,6 +607,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a53 = '0'
         self.check_invalid('both amounts are negative (-0.00000001 TMSC,-1 TIndiv1)', txid_a53)
 
+        TestInfo.StopExpectation()
+
 
     # A54-55
     def test_invalid_negative_zero(self):
@@ -563,6 +624,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         # TODO: This is currently not part of the test plan where A54-55 are additional tests of negative amounts.
         # TODO: Split, rename or merge this test with other out-of-range tests.
+
+        TestInfo.ExpectFail()
 
         #                    entity_a1.trade('-0.00000000', TMSC, '1.00000000', TDiv1, ADD_1)
         try:    txid_a54_1 = entity_a1.node.sendrawtx_MP(entity_a1.address,
@@ -612,6 +675,8 @@ class MetaDexPlanTest(MasterTestFramework):
         except: txid_a55_4 = '0'
         self.check_invalid('amount desired is not within valid range (0xffffffffffffffff TMSC)', txid_a55_4)
 
+        TestInfo.StopExpectation()
+
 
     def test_new_orders_for_divisible(self):
         """Tests creation of offers with divisible amounts.
@@ -635,10 +700,14 @@ class MetaDexPlanTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TDiv1, '90.00000000', '10.00000000')
         self.check_balance(entity_a1.address, TIndiv1, '1000', '0')
 
+        TestInfo.ExpectFail()
+
         # A59
         try:    txid_a59 = entity_a1.trade('10.00000001', TMSC, '9.99999999', TDiv1, CANCEL_2)
         except: txid_a59 = '0'
         self.check_invalid('no active orders for that pair and price', txid_a59)
+
+        TestInfo.StopExpectation()
 
         # A60
         entity_a1.trade('3.00000000', TDiv1, '3.00000000', TMSC)
@@ -979,6 +1048,8 @@ class MetaDexPlanTest(MasterTestFramework):
 
         # TODO: Negative amounts are currently parsed as 0 by StrToInt64, but it should not matter in this context.
 
+        TestInfo.ExpectFail()
+
         # A81 (amounts should be ignored in CANCEL-PAIR operations)
         try:    txid_a81 = entity_a2.trade('-0.00000001', TDiv3, '0.00000000', TMSC,  CANCEL_3)
         except: txid_a81 = '0'
@@ -998,6 +1069,8 @@ class MetaDexPlanTest(MasterTestFramework):
         try:    txid_a83_b = entity_a1.trade('6.00000000', TMSC, '0.00000005', TDiv3, CANCEL_3)
         except: txid_a83_b = '0'
         self.check_invalid('A1 does not have any open order of pair TMSC - TDiv3', txid_a83_b)
+
+        TestInfo.StopExpectation()
 
         # A84
         entity_a2.trade('10.00000000', TDiv3, '5.00000000', TMSC)
@@ -1276,10 +1349,14 @@ class MetaDexPlanTest(MasterTestFramework):
         #
         self.check_balance(entity_a1.address, TIndiv1, '985', '15')
 
+        TestInfo.ExpectFail()
+
         # A104
         try:    txid_a104 = entity_a1.trade('10.00000001', TMSC, '10', TIndiv1, CANCEL_2)
         except: txid_a104 = '0'
         self.check_invalid('no active orders for that pair and price', txid_a104)
+
+        TestInfo.StopExpectation()
 
         # A105
         entity_a1.trade('3', TIndiv1, '3.00000000', TMSC)

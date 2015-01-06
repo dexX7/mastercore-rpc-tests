@@ -6,6 +6,7 @@ from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
 from framework_info import TestInfo
 
+
 # Helper
 
 BTC = 0
@@ -40,6 +41,8 @@ class DexCrossEcosystemSideEffectsTest(MasterTestFramework):
 
         self.test_dex_side_effects_on_other_ecosystem()
         self.test_dex_side_effects_on_same_ecosystem()
+
+        self.success = TestInfo.Status()
 
 
     def prepare_funding(self):

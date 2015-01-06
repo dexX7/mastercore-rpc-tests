@@ -48,6 +48,8 @@ class MetaDexCancelAtPriceTest(MasterTestFramework):
         self.test_cancel_amount_more_than_msc_balance()
         self.test_cancel_amount_more_than_tmsc_balance()
 
+        self.success = TestInfo.Status()
+
 
     def prepare_funding(self):
         """The miner (node 1) furthermore purchases 50000.0 MSC and 50000.0 TMSC."""

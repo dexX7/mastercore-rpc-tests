@@ -4,6 +4,7 @@
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
 
 
 class P2SHTest(MasterTestFramework):
@@ -44,6 +45,8 @@ class P2SHTest(MasterTestFramework):
         self.generate_block()
         self.check_balance(entity_p2sh.address, 1, '200.00000000')
         self.check_balance(entity_a2.address, 1, '0.00000000')
+
+        self.success = TestInfo.Status()
 
 
 if __name__ == '__main__':

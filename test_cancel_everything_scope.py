@@ -49,6 +49,8 @@ class MetaDexCancelEverythingScopeTest(MasterTestFramework):
         self.test_cancel_everything_main_ecosystem_secondary_primary()
         self.test_cancel_everything_main_ecosystem_secondary_secondary()
 
+        self.success = TestInfo.Status()
+
 
     def prepare_funding(self):
         """The miner (node 1) furthermore purchases 50000.0 MSC and 50000.0 TMSC."""

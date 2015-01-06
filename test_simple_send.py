@@ -6,11 +6,14 @@ import random
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
+
 
 # Helper
 
 MSC = 1
 TMSC = 2
+
 
 class SimpleSendTest(MasterTestFramework):
 
@@ -21,6 +24,8 @@ class SimpleSendTest(MasterTestFramework):
         self.initial_distribution()
 
         self.test_simple_sends()
+
+        self.success = TestInfo.Status()
 
 
     def prepare_funding(self):

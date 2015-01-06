@@ -2,6 +2,9 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+import traceback
+import sys
+
 from decimal import Decimal
 
 
@@ -9,49 +12,52 @@ class TestInfo(object):
     """Used to print additional information, if "--verbose" is enabled"""
 
     ENABLED = 1
+    _buffer = ''
+    _expect_fail = 0
+    _success = True
 
     @staticmethod
     def send(source, destination, property_id, amount, redeemer):
         if not TestInfo.ENABLED: return
-        print('Sending %s SP%d from %s to %s' % (
-            Decimal(amount).quantize(Decimal('0.00000001')), property_id, source.address, destination,))
+        TestInfo._buffer = 'Sending %s SP%d from %s to %s... ' % (
+            Decimal(amount).quantize(Decimal('0.00000001')), property_id, source.address, destination,)
 
     @staticmethod
     def trade(source, amount_sale, property_sale, amount_desired, property_desired, action):
         if not TestInfo.ENABLED: return
-        print('Offering (action: %d) %s SP%d from %s for %s SP%d' % (
+        TestInfo._buffer = 'Offering (action: %d) %s SP%d from %s for %s SP%d... ' % (
             action, Decimal(amount_sale).quantize(Decimal('0.00000001')), property_sale, source.address,
-            Decimal(amount_desired).quantize(Decimal('0.00000001')), property_desired,))
+            Decimal(amount_desired).quantize(Decimal('0.00000001')), property_desired,)
 
     @staticmethod
     def generate_block(source, count):
         if not TestInfo.ENABLED: return
-        print('Generating %d block' % (count,))
+        TestInfo._buffer = 'Generating %d block... ' % (count,)
 
     @staticmethod
     def get_balance(source, property_id):
         if not TestInfo.ENABLED: return
-        print('Getting balance from %s for SP%d' % (source.address, property_id,))
+        TestInfo._buffer = 'Getting balance from %s for SP%d' % (source.address, property_id,)
 
     @staticmethod
     def send_bitcoins(source, destination, amount, fee, addr_filter, min_conf, max_conf):
         if not TestInfo.ENABLED: return
-        print('Sending %s BTC from %s to %s with a fee of %s BTC' % (
+        TestInfo._buffer = 'Sending %s BTC from %s to %s with a fee of %s BTC... ' % (
             Decimal(amount).quantize(Decimal('0.00000001')), source.address, destination,
-            Decimal(fee).quantize(Decimal('0.00000001')),))
+            Decimal(fee).quantize(Decimal('0.00000001')),)
 
     @staticmethod
     def purchase_mastercoins(source, amount, fee):
         if not TestInfo.ENABLED: return
-        print('Purchasing Mastercoins from %s for %s BTC with a fee of %s BTC' % (
+        TestInfo._buffer = 'Purchasing Mastercoins from %s for %s BTC with a fee of %s BTC... ' % (
             source.address, Decimal(amount).quantize(Decimal('0.00000001')),
-            Decimal(fee).quantize(Decimal('0.00000001')),))
+            Decimal(fee).quantize(Decimal('0.00000001')),)
 
     @staticmethod
-    def check_balance_ok(source, expected_balance, propertyid, expected_reserved):
+    def check_balance(source, expected_balance, propertyid, expected_reserved):
         if not TestInfo.ENABLED: return
-        print('Balance of %s should be: %s SP%d (%s SP%d reserved)... OK' % (
-        source, expected_balance, propertyid, expected_reserved, propertyid,))
+        TestInfo._buffer = 'Balance of %s should be: %s SP%d (%s SP%d reserved)... ' % (
+        source, expected_balance, propertyid, expected_reserved, propertyid,)
 
     @staticmethod
     def check_orderbook_count_ok(expected_count, property_a, property_b):
@@ -68,3 +74,35 @@ class TestInfo(object):
     def log(message):
         if not TestInfo.ENABLED: return
         print(str(message))
+
+    @staticmethod
+    def OK():
+        if not TestInfo.ENABLED: return
+        TestInfo._buffer += 'OK'
+        print(TestInfo._buffer)
+
+    @staticmethod
+    def Fail(message='---', stacktrace=True):
+        if not TestInfo.ENABLED: return
+        if not TestInfo._expect_fail:
+            TestInfo._success = False
+            TestInfo._buffer += 'FAILED:\n%s' % (str(message),)
+            print(TestInfo._buffer)
+            if stacktrace:
+                traceback.print_stack(limit=8)
+        else:
+            TestInfo._buffer = TestInfo._buffer[:-4]
+            TestInfo._buffer += ' should fail: %s... OK' % (str(message),)
+            print(TestInfo._buffer)
+
+    @staticmethod
+    def ExpectFail():
+        TestInfo._expect_fail = 1
+
+    @staticmethod
+    def StopExpectation():
+        TestInfo._expect_fail = 0
+
+    @staticmethod
+    def Status():
+        return TestInfo._success

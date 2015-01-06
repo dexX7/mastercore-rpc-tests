@@ -4,6 +4,7 @@
 
 from framework_extension import MasterTestFramework
 from framework_entity import TestEntity
+from framework_info import TestInfo
 
 
 class ExodusPurchaseTest(MasterTestFramework):
@@ -14,6 +15,8 @@ class ExodusPurchaseTest(MasterTestFramework):
         self.test_purchases()
         self.test_simple_sends()
         self.test_overspents()
+
+        self.success = TestInfo.Status()
 
 
     def test_purchases(self):
@@ -75,20 +78,15 @@ class ExodusPurchaseTest(MasterTestFramework):
         entity_a1 = self.entities[1]
         entity_a2 = self.entities[2]
 
-        try: entity_a1.send(entity_a2.address, 1, '9000.0')
-        except: pass
+        TestInfo.ExpectFail()
 
-        try: entity_a2.send(entity_a1.address, 1, '90000.0')
-        except: pass
+        entity_a1.send(entity_a2.address, 1, '9000.0')
+        entity_a2.send(entity_a1.address, 1, '90000.0')
+        entity_a1.send(entity_a2.address, 5, '5.0')
+        entity_a1.send(entity_a2.address, -555, '55.0')
+        entity_a1.send(entity_a2.address, 1, '0.0')
 
-        try: entity_a1.send(entity_a2.address, 5, '5.0')
-        except: pass
-
-        try: entity_a1.send(entity_a2.address, -555, '55.0')
-        except: pass
-
-        try: entity_a1.send(entity_a2.address, 1, '0.0')
-        except: pass
+        TestInfo.StopExpectation()
 
         self.generate_block()
         self.check_balance(entity_a1.address, 1, '92.95679000', '0.00000000')

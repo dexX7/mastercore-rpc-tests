@@ -122,7 +122,7 @@ class BitcoinTestFramework(object):
 
         check_json_precision()
 
-        self.success = False
+        self.success = True
         try:
             if self.options.clearcache and os.path.isdir("cache"):
                 print("Clear cache")
@@ -135,15 +135,16 @@ class BitcoinTestFramework(object):
 
             self.run_test()
 
-            self.success = True
-
         except JSONRPCException as e:
+            self.success = False
             print("JSONRPC error: " + e.error['message'])
             traceback.print_tb(sys.exc_info()[2])
         except AssertionError as e:
+            self.success = False
             print("Assertion failed: " + e.message)
             traceback.print_tb(sys.exc_info()[2])
         except Exception as e:
+            self.success = False
             print("Unexpected exception caught during testing: " + str(e))
             traceback.print_tb(sys.exc_info()[2])
 

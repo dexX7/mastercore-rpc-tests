@@ -49,6 +49,8 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.test_cancel_everything_with_non_existing_property_primary_rpc()
         self.test_cancel_everything_all_fields_zero_rpc()
 
+        self.success = TestInfo.Status()
+
 
     def prepare_funding(self):
         """The miner (node 1) furthermore purchases 50000.0 MSC and 50000.0 TMSC."""
