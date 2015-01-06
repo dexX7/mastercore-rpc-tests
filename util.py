@@ -244,9 +244,9 @@ def connect_nodes_bi(nodes, a, b):
     connect_nodes(nodes[b], a)
 
 
-def assert_equal(thing1, thing2):
+def assert_equal(thing1, thing2, message='%s != %s'):
     if thing1 != thing2:
-        raise AssertionError("%s != %s" % (str(thing1), str(thing2)))
+        raise AssertionError(message % (str(thing1), str(thing2)))
 
 
 def check_array_result(object_array, to_match, expected):
