@@ -16,6 +16,7 @@ from test_meta_dex_plan import MetaDexPlanTest
 from test_p2sh import P2SHTest
 from test_property_creation import PropertyCreationTest
 from test_simple_send import SimpleSendTest
+from test_sto import SendToOwnersTest
 from test_traditional_dex import TraditionalDexTest
 
 

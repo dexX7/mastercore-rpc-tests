@@ -181,5 +181,11 @@ Tests side effects and interferences of the traditional and token exchange.
 ### [test_traditional_dex.py](test_traditional_dex.py)
 Some basic tests for the traditional BTC-MSC exchange.
 
+### [test_sto.py.py](test_sto.py.py)
+Tests "send-to-owners" transaction.
+
 ### [run_tests.py](run_tests.py)
-Executes all tests that are currently available.
+Executes tests that should be passed by [Master Core (mscore-0.0.9)](https://github.com/mastercoin-MSC/mastercore/tree/mscore-0.0.9).
+
+### [run_future_tests.py](run_future_tests.py)
+Executes tests that are not yet supported, but should be passed in the future.
