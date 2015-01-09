@@ -55,6 +55,7 @@ if __name__ == '__main__':
     enqueue_test (PropertyCreationTest)
     enqueue_test (P2SHTest)
     enqueue_test (TraditionalDexTest)
+    enqueue_test (SendToOwnersTest)
 
     start_tests()
     print_test_results()
