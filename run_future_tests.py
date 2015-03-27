@@ -33,17 +33,22 @@ def start_tests():
 def print_test_results():
     global exit_status
     errors = 0
+    skipped = 0
     test_count = len(all_tests)
     TestInfo.log('\n-----------------------------------------------------')
     TestInfo.log('\nTest summary:\n')
     for test in all_tests:
         test_name = test.__class__.__name__
+        if errors > 0 and TestInfo.FAIL_HARD:
+            TestInfo.log(test_name + ' ... skipped')
+            skipped += 1
+            continue
         if test.success:
             TestInfo.log(test_name + ' ... successful')
         else:
             errors += 1
             TestInfo.log(test_name + ' ... failed')
-    TestInfo.log('\n%d of %d tests successful' % (test_count-errors, test_count,))
+    TestInfo.log('\n%d of %d tests successful (%s skipped)' % (test_count-errors, test_count, skipped,))
     exit_status = int(errors > 0)
 
 
@@ -59,10 +64,10 @@ if __name__ == '__main__':
     enqueue_test (MetaDexPlanTest)
     enqueue_test (MetaDexCancelAtPriceTest)
     enqueue_test (MetaDexCancelPairAndLookupTest)
+    enqueue_test (DexCrossEcosystemSideEffectsTest)
     enqueue_test (MetaDexCancelEverythingInSameEcosystemTest)
     enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
     enqueue_test (MetaDexCancelEverythingScopeTest)
-    enqueue_test (DexCrossEcosystemSideEffectsTest)
 
     start_tests()
     print_test_results()

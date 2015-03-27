@@ -12,6 +12,7 @@ class TestInfo(object):
     """Used to print additional information, if "--verbose" is enabled"""
 
     ENABLED = 1
+    FAIL_HARD = 1
     _buffer = ''
     _expect_fail = 0
     _success = True
@@ -96,6 +97,8 @@ class TestInfo(object):
             print(TestInfo._buffer)
             if stacktrace:
                 traceback.print_stack(limit=8)
+            if TestInfo.FAIL_HARD:
+                raise AssertionError(TestInfo._buffer)
         else:
             TestInfo._buffer = TestInfo._buffer[:-4]
             TestInfo._buffer += ' should fail: %s... OK' % (str(message),)
