@@ -81,7 +81,7 @@ def initialize_datadir(path, n):
         f.write("rpcpassword=rt\n")
         f.write("port=" + str(p2p_port(n)) + "\n")
         f.write("rpcport=" + str(rpc_port(n)) + "\n")
-        f.write("txindedx=1\n")
+        f.write("txindex=1\n")
     return datadir
 
 
