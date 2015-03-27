@@ -17,6 +17,7 @@ class MasterTestFramework(BitcoinTestFramework):
 
     def generate_block(self, node=0, num=1):
         """Generates a new block and synchronizes all nodes"""
+        TestInfo.log('Generating %d blocks..' % (num,))
         self.sync_all()
         self.nodes[node].setgenerate(True, num)
         self.sync_all()
