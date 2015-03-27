@@ -1,10 +1,14 @@
+####Please note:
+
+**All new tests will be published as part of https://github.com/msgilligan/bitcoin-spock.**
+
 Regression tests of RPC interface
 =================================
 
 Python based RPC tests for [Master Core](https://github.com/mastercoin-MSC/mastercore).
 
-To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files
-or use `--daemon` and `--cli` as startup parameter to specify the binary files to use:
+To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files,
+or use the `--daemon` and `--cli` startup parameter to specify the binary files to use:
 
 ```bash
 ~/mastercore/qa/mastercore-rpc-tests$ python test_exodus_purchase.py
