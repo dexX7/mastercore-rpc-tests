@@ -1,8 +1,10 @@
 Regression tests of RPC interface
 =================================
 
-To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files 
-or use `--bindir` as startup parameter, pointing to [Master Core](https://github.com/mastercoin-MSC/mastercore):
+Python based RPC tests for [Master Core](https://github.com/mastercoin-MSC/mastercore).
+
+To run the tests, place this folder relative to the `mastercored` and `mastercore-cli` files
+or use `--daemon` and `--cli` as startup parameter to specify the binary files to use:
 
 ```bash
 ~/mastercore/qa/mastercore-rpc-tests$ python test_exodus_purchase.py
@@ -107,9 +109,6 @@ Cleaning up
 Tests successful
 ```
 
-In fact, this example could be saved as `test_purchase.py` and then tested 
-by `python test_purchase.py --bindir=/path-to-bin-dir-with-mastercored`.
-
 ... a continuation of this can be found in [test_exodus_purchase.py](test_exodus_purchase.py).
 
 Startup options
@@ -119,17 +118,18 @@ Startup options
 Usage: run_tests.py [options]
 
 Options:
-  -h, --help       show this help message and exit
-  --clearcache     Clear cache on startup (default: False)
-  --nocleanup      Leave mastercored's and test.* regtest datadir on exit or
-                   error (default: False)
-  --stdout         Show standard output of nodes, otherwise redirect to
-                   /dev/null
-  --bindir=BINDIR  Directory containing daemon and cli binaries (default:
-                   ../../src)
-  --tmpdir=TMPDIR  Root directory for temporary datadirs
-  --tracerpc       Print out all RPC calls as they are made (default: False)
-  --quiet          Hide verbose runtime information (default: False)
+  -h, --help          Show this help message and exit
+  --clearcache        Clear cache on startup (default: False)
+  --nocleanup         Leave mastercored's and test.* regtest datadir on exit
+                      or error (default: False)
+  --stdout            Show standard output of nodes, otherwise redirect to
+                      /dev/null
+  --daemon=DAEMONBIN  The daemon/server (default: ../../src/mastercored)
+  --cli=CLIBIN        The RPC client (default: ../../src/mastercore-cli)
+  --tmpdir=TMPDIR     Root directory for temporary datadirs
+  --tracerpc          Print out all RPC calls as they are made (default:
+                      False)
+  --quiet             Hide verbose runtime information (default: False)
 ```
 
 File overview

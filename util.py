@@ -85,7 +85,7 @@ def initialize_datadir(path, n):
     return datadir
 
 
-def initialize_chain(test_dir, showstdout=False):
+def initialize_chain(bin_bitcoind, bin_bitcoincli, test_dir, showstdout=False):
     """
     Create (or copy from cache) a 200-block-long chain and
     4 wallets.
@@ -97,11 +97,11 @@ def initialize_chain(test_dir, showstdout=False):
         # Create cache directories, run mastercoreds:
         for i in range(4):
             datadir = initialize_datadir("cache", i)
-            args = [os.getenv("MASTERCORED", "mastercored"), "-keypool=1", "-datadir=" + datadir, "-discover=0"]
+            args = [bin_bitcoind, "-keypool=1", "-datadir=" + datadir, "-discover=0"]
             if i > 0:
                 args.append("-connect=127.0.0.1:" + str(p2p_port(0)))
             bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
-            subprocess.check_call([os.getenv("MASTERCORECLI", "mastercore-cli"), "-datadir=" + datadir,
+            subprocess.check_call([bin_bitcoincli, "-datadir=" + datadir,
                                    "-rpcwait", "getblockcount"], stdout=devnull)
         if devnull is not None:
             devnull.close()
@@ -131,7 +131,7 @@ def initialize_chain(test_dir, showstdout=False):
             if os.path.isfile(log_filename("cache", i, "mastercore.log")):
                 os.remove(log_filename("cache", i, "mastercore.log"))
             if os.path.isfile(log_filename("cache", i, "peers.dat")):
-                os.remove(log_filename("cache", i, "peers.dat"))            
+                os.remove(log_filename("cache", i, "peers.dat"))
             if os.path.isfile(log_filename("cache", i, "temp-ok-to-remove.log")):
                 os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))
             if os.path.isdir(log_filename("cache", i, "MP_persist")):
@@ -175,19 +175,19 @@ def _rpchost_to_args(rpchost):
     return rv
 
 
-def start_node(i, path, extra_args=None, rpchost=None, showstdout=False):
+def start_node(i, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=None, showstdout=False):
     """
     Start a mastercored and return RPC connection to it
     """
     datadir = os.path.join(path, "node" + str(i))
-    args = [os.getenv("MASTERCORED", "mastercored"), "-datadir=" + datadir, "-keypool=1", "-discover=0"]
+    args = [bin_bitcoind, "-datadir=" + datadir, "-keypool=1", "-discover=0"]
     if extra_args is not None:
         args.extend(extra_args)
     devnull = None
     if not showstdout:
         devnull = open("/dev/null", "w+")
     bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
-    subprocess.check_call([os.getenv("MASTERCORECLI", "mastercore-cli"), "-datadir=" + datadir] +
+    subprocess.check_call([bin_bitcoincli, "-datadir=" + datadir] +
                           _rpchost_to_args(rpchost) +
                           ["-rpcwait", "getblockcount"], stdout=devnull)
     if devnull is not None:
@@ -198,13 +198,13 @@ def start_node(i, path, extra_args=None, rpchost=None, showstdout=False):
     return proxy
 
 
-def start_nodes(num_nodes, path, extra_args=None, rpchost=None, showstdout=False):
+def start_nodes(num_nodes, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=None, showstdout=False):
     """
     Start multiple mastercoreds, return RPC connections to them
     """
     if extra_args is None:
         extra_args = [None for i in range(num_nodes)]
-    return [start_node(i, path, extra_args[i], rpchost, showstdout) for i in range(num_nodes)]
+    return [start_node(i, bin_bitcoind, bin_bitcoincli, path, extra_args[i], rpchost, showstdout) for i in range(num_nodes)]
 
 
 def log_filename(path, n_node, logname):

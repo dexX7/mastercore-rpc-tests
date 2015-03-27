@@ -34,10 +34,12 @@ class BitcoinTestFramework(object):
 
     def setup_chain(self):
         print("Initializing test directory " + self.options.tmpdir)
-        initialize_chain(self.options.tmpdir, self.options.showstdout)
+        initialize_chain(self.options.bin_bitcoind, self.options.bin_bitcoincli,
+                         self.options.tmpdir, self.options.showstdout)
 
     def setup_network(self, split=False):
-        self.nodes = start_nodes(4, self.options.tmpdir, showstdout=self.options.showstdout)
+        self.nodes = start_nodes(4, self.options.bin_bitcoind, self.options.bin_bitcoincli,
+                                 self.options.tmpdir, showstdout=self.options.showstdout)
 
         # Connect the nodes as a "chain".  This allows us
         # to split the network between nodes 1 and 2 to get
@@ -83,7 +85,7 @@ class BitcoinTestFramework(object):
         wait_bitcoinds()
         self.setup_network(False)
 
-    def main(self):        
+    def main(self):
         # during runtime change dir to the dir of the framework,
         # because most calls assume it's executed from within the
         # same dir
@@ -98,8 +100,10 @@ class BitcoinTestFramework(object):
                           help="Leave mastercored's and test.* regtest datadir on exit or error (default: %default)")
         parser.add_option("--stdout", dest="showstdout", default=False, action="store_true",
                           help="Show standard output of nodes, otherwise redirect to /dev/null")
-        parser.add_option("--bindir", dest="bindir", default="../../src",
-                          help="Directory containing daemon and cli binaries (default: %default)")
+        parser.add_option("--daemon", dest="daemonbin", default="../../src/mastercored",
+                          help="The daemon/server (default: %default)")
+        parser.add_option("--cli", dest="clibin", default="../../src/mastercore-cli",
+                          help="The RPC client (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
                           help="Root directory for temporary datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
@@ -117,8 +121,17 @@ class BitcoinTestFramework(object):
             from framework_info import TestInfo
             TestInfo.ENABLED = 0
 
-        if self.options.bindir:
-            os.environ['PATH'] = self.options.bindir + ":" + os.environ['PATH']
+        # daemon and cli client files
+        self.options.bin_bitcoind = os.path.realpath(self.options.daemonbin)
+        self.options.bin_bitcoincli = os.path.realpath(self.options.clibin)
+
+        if not os.path.isfile(self.options.bin_bitcoind):
+            print("Invalid daemon file: %s" % (self.options.bin_bitcoind))
+            return 1
+
+        if not os.path.isfile(self.options.bin_bitcoincli):
+            print("Invalid RPC client file: %s" % (self.options.bin_bitcoincli))
+            return 1
 
         check_json_precision()
 
