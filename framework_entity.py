@@ -120,7 +120,7 @@ class TestEntity(object):
         TestInfo.trade(self, amount_sale, property_sale, amount_desired, property_desired, action)
         txid = '0000000000000000000000000000000000000000000000000000000000000000'
         try:
-            txid = self.node.trade_MP(self.address, amount_sale, property_sale, amount_desired, property_desired, action)
+            txid = self.node.trade_MP(self.address, property_sale, amount_sale, property_desired, amount_desired, action)
             TestInfo.OK()
         except JSONRPCException as e:
             TestInfo.Fail(e.error['message'])
