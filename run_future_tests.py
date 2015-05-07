@@ -18,7 +18,8 @@ from test_property_creation import PropertyCreationTest
 from test_simple_send import SimpleSendTest
 from test_sto import SendToOwnersTest
 from test_traditional_dex import TraditionalDexTest
-
+from test_mdex_max_amount import MetaDexMaxAmountTest
+from test_mdex_zero_trade import MetaDexZeroTradeTest
 
 all_tests = []
 exit_status = 0
@@ -68,6 +69,8 @@ if __name__ == '__main__':
     enqueue_test (MetaDexCancelEverythingInSameEcosystemTest)
     enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
     enqueue_test (MetaDexCancelEverythingScopeTest)
+    enqueue_test (MetaDexMaxAmountTest)
+    enqueue_test (MetaDexZeroTradeTest)
 
     start_tests()
     print_test_results()
