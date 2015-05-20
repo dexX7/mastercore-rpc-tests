@@ -9,7 +9,7 @@ from framework_info import TestInfo
 # Helper
 MSC = 1
 TMSC = 2
-MDiv1 = 3
+MIndiv1 = 3
 
 ADD_1 = 1
 
@@ -23,7 +23,7 @@ def strip_json(msg):
     return msg
 
 
-class MetaDexZeroTradeTest(MasterTestFramework):
+class MetaDexBothRemainingTest(MasterTestFramework):
 
     def run_test(self):
         self.entities = [TestEntity(node) for node in self.nodes]
@@ -31,7 +31,7 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         self.prepare_funding()
         self.prepare_properties()
         self.initial_distribution()
-        self.test_zero_amount_trade()
+        self.test_both_have_remaining()
 
         self.success = TestInfo.Status()
 
@@ -58,11 +58,12 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         if len(node.listproperties_MP()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
-        # tx: 50, ecosystem: 1, 92233720368.54775807 divisible tokens, "MDiv1"
-        node.sendrawtx_MP(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
+        # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv1"
+        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
 
         self.generate_block()
-        self.check_balance(addr, MDiv1, '92233720368.54775807', '0.00000000')
+        self.check_balance(addr, MIndiv1, '9223372036854775807', '0')
+
 
     def initial_distribution(self):
         """Tokens and bitcoins are sent from the miner (node 1) to A1 (node 2),
@@ -76,53 +77,43 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         entity_miner.send_bitcoins(entity_a1.address, 1.0)
         entity_miner.send_bitcoins(entity_a2.address, 1.0)
 
-        entity_miner.send(entity_a1.address, MSC,   '0.00000008')
-        entity_miner.send(entity_a2.address, MDiv1, '0.00000010')
+        entity_miner.send(entity_a1.address, MIndiv1, '25')
+        entity_miner.send(entity_a2.address, MSC,      '0.55000000')
 
         self.generate_block()
-        self.check_balance(entity_a1.address, MSC,   '0.00000008', '0.00000000')
-        self.check_balance(entity_a1.address, MDiv1, '0.00000000', '0.00000000')
-        self.check_balance(entity_a2.address, MSC,   '0.00000000', '0.00000000')
-        self.check_balance(entity_a2.address, MDiv1, '0.00000010', '0.00000000')
+        self.check_balance(entity_a1.address, MSC,      '0.00000000', '0.00000000')
+        self.check_balance(entity_a1.address, MIndiv1, '25',          '0')
+        self.check_balance(entity_a2.address, MSC,      '0.55000000', '0.00000000')
+        self.check_balance(entity_a2.address, MIndiv1,  '0',          '0')
 
-    def test_zero_amount_trade(self):
-        """See:
-        https://github.com/OmniLayer/omnicore/issues/21#issuecomment-98020753"""
+    def test_both_have_remaining(self):
+        """Tests whether the trade is in favor of the buyer, and confirms that two
+        partially filled positions are on the market after the trade.
+
+        See: https://github.com/OmniLayer/omnicore/issues/21#issuecomment-100124483"""
         entity_a1 = self.entities[1]
         entity_a2 = self.entities[2]
 
-        txid1 = entity_a1.trade('0.00000006', MSC,   '0.00000006', MDiv1, ADD_1)
+        txid1 = entity_a1.trade('25', MIndiv1, '2.50000000', MSC, ADD_1)
         self.generate_block()
 
-        txid2 = entity_a2.trade('0.00000010', MDiv1, '0.00000001', MSC,   ADD_1)
+        txid2 = entity_a2.trade('0.55000000', MSC, '5', MIndiv1, ADD_1)
         self.generate_block()
 
-        txid3 = entity_a1.trade('0.00000001', MSC,   '0.00000010', MDiv1, ADD_1)
-        self.generate_block()
-
-        txid4 = entity_a1.trade('0.00000001', MSC,   '0.00000004', MDiv1, ADD_1)
-        self.generate_block()
-
-        trade1 = self.nodes[3].gettrade_MP(txid1)
-        trade2 = self.nodes[3].gettrade_MP(txid2)
-        trade3 = self.nodes[3].gettrade_MP(txid3)
-        trade4 = self.nodes[3].gettrade_MP(txid4)
+        trade1 = self.nodes[0].gettrade_MP(txid1)
+        trade2 = self.nodes[0].gettrade_MP(txid2)
 
         # TODO: remove debug output, once the issue is resolved!
         TestInfo.log('Trade 1:')
         TestInfo.log(strip_json(trade1))
         TestInfo.log('Trade 2:')
         TestInfo.log(strip_json(trade2))
-        TestInfo.log('Trade 3:')
-        TestInfo.log(strip_json(trade3))
-        TestInfo.log('Trade 4:')
-        TestInfo.log(strip_json(trade4))
 
-        assert trade1['status'] == 'filled'
-        assert trade2['status'] == 'filled'
-        assert trade3['status'] == 'open'
-        assert trade4['status'] == 'filled'
+        assert trade1['status'] != 'open'
+        assert trade2['status'] != 'open'
+        assert trade1['status'] != 'filled'
+        assert trade2['status'] != 'filled'
 
 
 if __name__ == '__main__':
-    MetaDexZeroTradeTest().main()
+    MetaDexBothRemainingTest().main()

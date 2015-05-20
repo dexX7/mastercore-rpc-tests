@@ -23,7 +23,7 @@ def strip_json(msg):
     return msg
 
 
-class MetaDexZeroTradeTest(MasterTestFramework):
+class MetaDexBestFillTest(MasterTestFramework):
 
     def run_test(self):
         self.entities = [TestEntity(node) for node in self.nodes]
@@ -31,7 +31,7 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         self.prepare_funding()
         self.prepare_properties()
         self.initial_distribution()
-        self.test_zero_amount_trade()
+        self.test_trade_max_best_amount()
 
         self.success = TestInfo.Status()
 
@@ -64,6 +64,7 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         self.generate_block()
         self.check_balance(addr, MDiv1, '92233720368.54775807', '0.00000000')
 
+
     def initial_distribution(self):
         """Tokens and bitcoins are sent from the miner (node 1) to A1 (node 2),
         and A2 (node 3).
@@ -76,53 +77,40 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         entity_miner.send_bitcoins(entity_a1.address, 1.0)
         entity_miner.send_bitcoins(entity_a2.address, 1.0)
 
-        entity_miner.send(entity_a1.address, MSC,   '0.00000008')
-        entity_miner.send(entity_a2.address, MDiv1, '0.00000010')
+        entity_miner.send(entity_a1.address, MSC,   '0.00000020')
+        entity_miner.send(entity_a2.address, MDiv1, '0.00000012')
 
         self.generate_block()
-        self.check_balance(entity_a1.address, MSC,   '0.00000008', '0.00000000')
+        self.check_balance(entity_a1.address, MSC,   '0.00000020', '0.00000000')
         self.check_balance(entity_a1.address, MDiv1, '0.00000000', '0.00000000')
         self.check_balance(entity_a2.address, MSC,   '0.00000000', '0.00000000')
-        self.check_balance(entity_a2.address, MDiv1, '0.00000010', '0.00000000')
+        self.check_balance(entity_a2.address, MDiv1, '0.00000012', '0.00000000')
 
-    def test_zero_amount_trade(self):
-        """See:
-        https://github.com/OmniLayer/omnicore/issues/21#issuecomment-98020753"""
+    def test_trade_max_best_amount(self):
+        """ Tests whether the maximum amount at the best price is traded.
+
+        See: https://github.com/mastercoin-MSC/spec/issues/170#issuecomment-44072344"""
         entity_a1 = self.entities[1]
         entity_a2 = self.entities[2]
 
-        txid1 = entity_a1.trade('0.00000006', MSC,   '0.00000006', MDiv1, ADD_1)
+        txid1 = entity_a1.trade('0.00000020', MSC,   '0.00000010', MDiv1, ADD_1)
         self.generate_block()
 
-        txid2 = entity_a2.trade('0.00000010', MDiv1, '0.00000001', MSC,   ADD_1)
-        self.generate_block()
-
-        txid3 = entity_a1.trade('0.00000001', MSC,   '0.00000010', MDiv1, ADD_1)
-        self.generate_block()
-
-        txid4 = entity_a1.trade('0.00000001', MSC,   '0.00000004', MDiv1, ADD_1)
+        txid2 = entity_a2.trade('0.00000012', MDiv1, '0.00000017', MSC,   ADD_1)
         self.generate_block()
 
         trade1 = self.nodes[3].gettrade_MP(txid1)
         trade2 = self.nodes[3].gettrade_MP(txid2)
-        trade3 = self.nodes[3].gettrade_MP(txid3)
-        trade4 = self.nodes[3].gettrade_MP(txid4)
 
         # TODO: remove debug output, once the issue is resolved!
         TestInfo.log('Trade 1:')
         TestInfo.log(strip_json(trade1))
         TestInfo.log('Trade 2:')
         TestInfo.log(strip_json(trade2))
-        TestInfo.log('Trade 3:')
-        TestInfo.log(strip_json(trade3))
-        TestInfo.log('Trade 4:')
-        TestInfo.log(strip_json(trade4))
 
         assert trade1['status'] == 'filled'
-        assert trade2['status'] == 'filled'
-        assert trade3['status'] == 'open'
-        assert trade4['status'] == 'filled'
+        assert trade2['status'] != 'open'
 
 
 if __name__ == '__main__':
-    MetaDexZeroTradeTest().main()
+    MetaDexBestFillTest().main()
