@@ -33,8 +33,7 @@ class TestInfo(object):
     def trade(source, amount_sale, property_sale, amount_desired, property_desired, action):
         if not TestInfo.ENABLED: return
         TestInfo._buffer = 'Offering (action: %d) %s SP%d from %s for %s SP%d... ' % (
-            action, Decimal(amount_sale).quantize(Decimal('0.00000001')), property_sale, source.address,
-            Decimal(amount_desired).quantize(Decimal('0.00000001')), property_desired,)
+            action, amount_sale, property_sale, source.address, amount_desired, property_desired,)
 
     @staticmethod
     def generate_block(source, count):
