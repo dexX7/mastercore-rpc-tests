@@ -97,12 +97,12 @@ class BitcoinTestFramework(object):
         parser.add_option("--clearcache", dest="clearcache", default=False, action="store_true",
                           help="Clear cache on startup (default: %default)")
         parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
-                          help="Leave mastercored's and test.* regtest datadir on exit or error (default: %default)")
+                          help="Leave omnicored's and test.* regtest datadir on exit or error (default: %default)")
         parser.add_option("--stdout", dest="showstdout", default=False, action="store_true",
                           help="Show standard output of nodes, otherwise redirect to /dev/null")
-        parser.add_option("--daemon", dest="daemonbin", default="../../src/mastercored",
+        parser.add_option("--daemon", dest="daemonbin", default="../../src/omnicored",
                           help="The daemon/server (default: %default)")
-        parser.add_option("--cli", dest="clibin", default="../../src/mastercore-cli",
+        parser.add_option("--cli", dest="clibin", default="../../src/omnicore-cli",
                           help="The RPC client (default: %default)")
         parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
                           help="Root directory for temporary datadirs")

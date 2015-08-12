@@ -71,29 +71,29 @@ class MetaDexCancelEverythingInSameEcosystemTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        if len(node.listproperties_MP()) > 2:
+        if len(node.omni_listproperties()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv1"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv2"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv3"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976330000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976330000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndivMax"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e6469764d61780000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e6469764d61780000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv1"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976310000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv2"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976320000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976320000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv3"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976330000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976330000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDivMax"
-        node.sendrawtx_MP(addr, '00000032020002000000000000544469764d61780000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '00000032020002000000000000544469764d61780000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv1"
-        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 92233720368.54770000 divisible tokens, "MDiv1"
-        node.sendrawtx_MP(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
 
         self.generate_block()
         self.check_balance(addr, TIndiv1,   '9223372036854775807',  '0')
@@ -199,8 +199,8 @@ class MetaDexCancelEverythingInSameEcosystemTest(MasterTestFramework):
         entity_a1.trade('10', MIndiv1, '0.5', MSC, ADD_1)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,     '50.00000000',  '0.00000000')  # SP 1
-        self.check_balance(entity_a1.address, MIndiv1,  '0',          '50')           # SP 3
-        self.check_balance(entity_a1.address, MDiv1,    '0.00000000',  '0.00000000')  # SP 4
+        self.check_balance(entity_a1.address, MIndiv1, '0',           '50')           # SP 3
+        self.check_balance(entity_a1.address, MDiv1,   '0.00000000',   '0.00000000')  # SP 4
 
         # 3. A1 cancels everything in the main ecosystem (0.0 MSC, 0.0 MDiv1)
         entity_a1.trade('0.00000000', MSC, '0.00000000', MDiv1, CANCEL_4)

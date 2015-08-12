@@ -42,9 +42,9 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        self.test_cancel_everything_with_non_existing_property_raw()
-        self.test_cancel_everything_with_non_existing_property_primary_raw()
-        self.test_cancel_everything_all_fields_zero_raw()
+        #self.test_cancel_everything_with_non_existing_property_raw()
+        #self.test_cancel_everything_with_non_existing_property_primary_raw()
+        #self.test_cancel_everything_all_fields_zero_raw()
         self.test_cancel_everything_with_non_existing_property_rpc()
         self.test_cancel_everything_with_non_existing_property_primary_rpc()
         self.test_cancel_everything_all_fields_zero_rpc()
@@ -76,29 +76,29 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        if len(node.listproperties_MP()) > 2:
+        if len(node.omni_listproperties()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv1"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv2"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndiv3"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976330000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976330000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 9223372036854775807 indivisible tokens, "TIndivMax"
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e6469764d61780000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e6469764d61780000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv1"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976310000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv2"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976320000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976320000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDiv3"
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976330000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976330000007fffffffffffffff')
         # tx: 50, ecosystem: 2, 92233720368.54770000 divisible tokens, "TDivMax"
-        node.sendrawtx_MP(addr, '00000032020002000000000000544469764d61780000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '00000032020002000000000000544469764d61780000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv1"
-        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 92233720368.54770000 divisible tokens, "MDiv1"
-        node.sendrawtx_MP(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
 
         self.generate_block()
         self.check_balance(addr, TIndiv1,   '9223372036854775807',  '0')
@@ -165,7 +165,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
 
         # 3. A1 cancels everything in the test ecosystem (50.0 TMSC, 9000 of a non existing test property)
         TestInfo.log(entity_a1.address + ' cancels everything (50.0 TMSC, 9000 of a non existing test property)')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                            '0000001500000002000000012a05f2008000000b000000d18c2e280004')
         # entity_a1.trade('50.00000000', TMSC, '9000', TNotCreated, CANCEL_4)
         self.generate_block()
@@ -201,7 +201,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
 
         # 3. A1 cancels everything in the test ecosystem (9000 of a non existing test property, 50.0 TMSC)
         TestInfo.log(entity_a1.address + ' cancels everything (50.0 TMSC, 9000 of a non existing test property)')
-        txid = entity_a1.node.sendrawtx_MP(entity_a1.address,
+        txid = entity_a1.node.omni_sendrawtx(entity_a1.address,
                                            '000000158000000b000000012a05f20000000002000000d18c2e280004')
         # entity_a1.trade('9000', TNotCreated, '50.00000000', TMSC, CANCEL_4)
         self.generate_block()
@@ -233,7 +233,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         # 3. A1 cancels everything, all fields set to zero (0.0 SP0, 0.0 SP0)
         # entity_a1.trade('0.00000000', 0, '0.00000000', 0, CANCEL_4)
         TestInfo.log(entity_a1.address + ' cancels everything (0.0 SP0, 0.0 SP0)')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                            '0000001500000000000000000000000000000000000000000000000004')
         self.generate_block()
 
@@ -266,7 +266,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1,  '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '50.00000000',  '0.00000000')  # SP 2147483655
 
-        # 3. A1 cancels everything in the main ecosystem (0.0 TDiv1, 9000 of a non existing test property)
+        # 3. A1 cancels everything in the test ecosystem (0.0 TDiv1, 9000 of a non existing test property)
         entity_a1.trade('0.00000000', TDiv1, '9000', TNotCreated, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2
@@ -298,7 +298,7 @@ class MetaDexCancelEverythingIgnorePropertyTest(MasterTestFramework):
         self.check_balance(entity_a1.address, TIndiv1,  '0',           '0')           # SP 2147483651
         self.check_balance(entity_a1.address, TDiv1,   '50.00000000',  '0.00000000')  # SP 2147483655
 
-        # 3. A1 cancels everything in the main ecosystem (9000 of a non existing test property, 0.0 TDiv1)
+        # 3. A1 cancels everything in the test ecosystem (9000 of a non existing test property, 0.0 TDiv1)
         entity_a1.trade('9000', TNotCreated, '0.00000000', TDiv1, CANCEL_4)
         self.generate_block()
         self.check_balance(entity_a1.address, TMSC,    '50.00000000',  '0.00000000')  # SP 2

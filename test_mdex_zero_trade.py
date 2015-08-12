@@ -55,11 +55,11 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        if len(node.listproperties_MP()) > 2:
+        if len(node.omni_listproperties()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
         # tx: 50, ecosystem: 1, 92233720368.54775807 divisible tokens, "MDiv1"
-        node.sendrawtx_MP(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
 
         self.generate_block()
         self.check_balance(addr, MDiv1, '92233720368.54775807', '0.00000000')
@@ -103,10 +103,10 @@ class MetaDexZeroTradeTest(MasterTestFramework):
         txid4 = entity_a1.trade('0.00000001', MSC,   '0.00000004', MDiv1, ADD_1)
         self.generate_block()
 
-        trade1 = self.nodes[3].gettrade_MP(txid1)
-        trade2 = self.nodes[3].gettrade_MP(txid2)
-        trade3 = self.nodes[3].gettrade_MP(txid3)
-        trade4 = self.nodes[3].gettrade_MP(txid4)
+        trade1 = self.nodes[3].omni_gettrade(txid1)
+        trade2 = self.nodes[3].omni_gettrade(txid2)
+        trade3 = self.nodes[3].omni_gettrade(txid3)
+        trade4 = self.nodes[3].omni_gettrade(txid4)
 
         # TODO: remove debug output, once the issue is resolved!
         TestInfo.log('Trade 1:')

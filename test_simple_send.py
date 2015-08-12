@@ -84,7 +84,7 @@ class SimpleSendTest(MasterTestFramework):
 
 
     def test_simple_sends(self):
-        """Tests the RPC call send_MP.
+        """Tests the RPC call omni_send.
 
         1. A1 starts with 50.0 BTC, 250.0 MSC and 250.0 TMSC
         2. 2. A1 sends 245.0 MSC and TMSC to A2 in random batches"""

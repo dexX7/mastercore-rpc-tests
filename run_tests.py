@@ -12,13 +12,17 @@ from test_cancel_everything_values import MetaDexCancelEverythingIgnorePropertyT
 from test_cancel_pair_and_lookup import MetaDexCancelPairAndLookupTest
 from test_dex_side_effects import DexCrossEcosystemSideEffectsTest
 from test_exodus_purchase import ExodusPurchaseTest
+from test_mdex_both_remaining import MetaDexBothRemainingTest
+from test_mdex_buyer_floor import MetaDexBuyerFloorTest
+from test_mdex_best_fill import MetaDexBestFillTest
+from test_mdex_rational_test import MetaDexRationalTest
+from test_mdex_zero_trade import MetaDexZeroTradeTest
 from test_meta_dex_plan import MetaDexPlanTest
 from test_p2sh import P2SHTest
 from test_property_creation import PropertyCreationTest
 from test_simple_send import SimpleSendTest
 from test_sto import SendToOwnersTest
 from test_traditional_dex import TraditionalDexTest
-
 
 all_tests = []
 exit_status = 0
@@ -61,6 +65,18 @@ if __name__ == '__main__':
     enqueue_test (P2SHTest)
     enqueue_test (TraditionalDexTest)
     enqueue_test (SendToOwnersTest)
+    enqueue_test (MetaDexPlanTest)
+    enqueue_test (MetaDexCancelAtPriceTest)
+    enqueue_test (MetaDexCancelPairAndLookupTest)
+    enqueue_test (DexCrossEcosystemSideEffectsTest)
+    enqueue_test (MetaDexCancelEverythingInSameEcosystemTest)
+    enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
+    enqueue_test (MetaDexCancelEverythingScopeTest)
+    enqueue_test (MetaDexBestFillTest)
+    enqueue_test (MetaDexZeroTradeTest)
+    enqueue_test (MetaDexBuyerFloorTest)
+    enqueue_test (MetaDexRationalTest)
+    enqueue_test (MetaDexBothRemainingTest)
 
     start_tests()
     print_test_results()

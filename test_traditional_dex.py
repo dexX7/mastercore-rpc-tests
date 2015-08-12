@@ -100,7 +100,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' offers 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '40.00000000', '10.00000000')  # SP 1
@@ -108,7 +108,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 5. A1 cancels 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' cancels 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000000000000000000000000000003')
 
         self.generate_block()
@@ -134,7 +134,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
 
         self.generate_block()
@@ -144,7 +144,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A1 updates to 5.0 MSC for 1.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' updates (action: 2) to 5.00000000 MSC for 1.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000001dcd65000000000005f5e1000a000000000000000002')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '45.00000000',  '5.00000000')  # SP 1
@@ -152,7 +152,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 4. A1 updates to 5.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' updates (action: 2) to 5.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000001dcd6500000000000bebc2000a000000000000000002')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '45.00000000',  '5.00000000')  # SP 1
@@ -161,7 +161,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 5. A1 updates to 25.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' updates (action: 2) to 25.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000009502f900000000000bebc2000a000000000000000002')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '25.00000000', '25.00000000')  # SP 1
@@ -170,7 +170,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 6. A1 updates to 250.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' updates (action: 2) to 250.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '000100140000000100000005d21dba00000000000bebc2000a000000000000000002')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,   '0.00000000', '50.00000000')  # SP 1
@@ -179,7 +179,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 7. A1 cancels MSC offer (traditional)
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
 
         self.generate_block()
@@ -204,7 +204,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '40.00000000', '10.00000000')  # SP 1
@@ -212,7 +212,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A1 offers 5.0 MSC for 1.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' offfers (action: 1) 5.00000000 MSC for 1.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000001dcd65000000000005f5e1000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '40.00000000', '10.00000000')  # SP 1
@@ -220,7 +220,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 4. A1 cancels MSC offer (traditional)
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC,  '50.00000000',  '0.00000000')  # SP 1
@@ -245,7 +245,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
@@ -253,14 +253,14 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A2 accepts 10.0 MSC
         TestInfo.log(entity_a2.address + ' accepts 10.00000000 MSC')
-        entity_a2.node.sendrawtx_MP(entity_a2.address, '0000001600000001000000003b9aca00', entity_a1.address)
+        entity_a2.node.omni_sendrawtx(entity_a2.address, '0000001600000001000000003b9aca00', entity_a1.address)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
         self.check_balance(entity_a2.address, MSC, '50.00000000',  '0.00000000')  # SP 1
 
         # 4. A1 cancels MSC offer
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
@@ -293,7 +293,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
@@ -301,7 +301,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A2 accepts 5.0 MSC
         TestInfo.log(entity_a2.address + ' accepts 5.00000000 MSC')
-        entity_a2.node.sendrawtx_MP(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
+        entity_a2.node.omni_sendrawtx(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
         self.check_balance(entity_a2.address, MSC, '50.00000000',  '0.00000000')  # SP 1
@@ -315,7 +315,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 5. A1 cancels MSC offer
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '45.00000000',  '2.50000000')  # SP 1
@@ -348,7 +348,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
@@ -356,7 +356,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A2 accepts 5.0 MSC
         TestInfo.log(entity_a2.address + ' accepts 5.00000000 MSC')
-        entity_a2.node.sendrawtx_MP(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
+        entity_a2.node.omni_sendrawtx(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
         self.check_balance(entity_a2.address, MSC, '50.00000000',  '0.00000000')  # SP 1
@@ -370,7 +370,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 5. A1 cancels MSC offer
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '45.00000000',  '2.50000000')  # SP 1
@@ -415,7 +415,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 2. A1 offers 10.0 MSC for 2.0 BTC
         TestInfo.log(entity_a1.address + ' offers (action: 1) 10.00000000 MSC for 2.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000001')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
@@ -423,7 +423,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 3. A2 accepts 5.0 MSC (1.0 BTC)
         TestInfo.log(entity_a2.address + ' accepts 5.00000000 MSC')
-        entity_a2.node.sendrawtx_MP(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
+        entity_a2.node.omni_sendrawtx(entity_a2.address, '0000001600000001000000001dcd6500', entity_a1.address)
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '40.00000000', '10.00000000')  # SP 1
         self.check_balance(entity_a2.address, MSC, '50.00000000',  '0.00000000')  # SP 1
@@ -437,7 +437,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 5. A1 updates to 20.0 MSC for 10.0 BTC (traditional)
         TestInfo.log(entity_a1.address + ' updates (action: 2) to 20.00000000 MSC for 10.0 BTC')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '00010014000000010000000077359400000000003b9aca000a000000000000000002')
         self.generate_block()
         self.check_balance(entity_a1.address, MSC, '25.00000000', '23.75000000')  # SP 1
@@ -452,7 +452,7 @@ class TraditionalDexTest(MasterTestFramework):
 
         # 7. A1 cancels MSC offer
         TestInfo.log(entity_a1.address + ' cancels (action: 3) an MSC offer')
-        entity_a1.node.sendrawtx_MP(entity_a1.address,
+        entity_a1.node.omni_sendrawtx(entity_a1.address,
                                     '0001001400000001000000003b9aca00000000000bebc2000a000000000000000003')
         self.generate_block()
 

@@ -32,7 +32,7 @@ class TestEntity(object):
         TestInfo.get_balance(self, property_id)
         balance = {}
         try:
-            balance = self.node.getbalance_MP(self.address, property_id)
+            balance = self.node.omni_getbalance(self.address, property_id)
             TestInfo.OK()
         except JSONRPCException as e:
             TestInfo.Fail(e.error['message'])
@@ -52,7 +52,7 @@ class TestEntity(object):
         TestInfo.send(self, destination, property_id, amount, redeemer)
         txid = '0000000000000000000000000000000000000000000000000000000000000000'
         try:
-            txid = self.node.send_MP(self.address, destination, property_id, str(amount), redeemer)
+            txid = self.node.omni_send(self.address, destination, property_id, str(amount), redeemer)
             TestInfo.OK()
         except JSONRPCException as e:
             TestInfo.Fail(e.error['message'])
@@ -62,7 +62,7 @@ class TestEntity(object):
         TestInfo.send_to_owners(self, property_id, amount, redeemer)
         txid = '0000000000000000000000000000000000000000000000000000000000000000'
         try:
-            txid = self.node.sendtoowners_MP(self.address, property_id, str(amount), redeemer)
+            txid = self.node.omni_sendsto(self.address, property_id, str(amount), redeemer)
             TestInfo.OK()
         except JSONRPCException as e:
             TestInfo.Fail(e.error['message'])

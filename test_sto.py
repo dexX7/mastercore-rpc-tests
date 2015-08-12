@@ -56,15 +56,15 @@ class SendToOwnersTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        if len(node.listproperties_MP()) > 2:
+        if len(node.omni_listproperties()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
         # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv1"
-        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv2"
-        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976320000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100010000000000004d496e646976320000007fffffffffffffff')
         # tx: 50, ecosystem: 1, 92233720368.54770000 divisible tokens, "MDiv1"
-        node.sendrawtx_MP(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100020000000000004d446976310000007fffffffffffffff')
 
         self.generate_block()
         self.check_balance(addr, MIndiv1, '9223372036854775807',  '0')

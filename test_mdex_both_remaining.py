@@ -55,11 +55,11 @@ class MetaDexBothRemainingTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        if len(node.listproperties_MP()) > 2:
+        if len(node.omni_listproperties()) > 2:
             AssertionError('There should not be more than two properties, MSC and TMSC, after a clean start')
 
         # tx: 50, ecosystem: 1, 9223372036854775807 indivisible tokens, "MIndiv1"
-        node.sendrawtx_MP(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
+        node.omni_sendrawtx(addr, '000000320100010000000000004d496e646976310000007fffffffffffffff')
 
         self.generate_block()
         self.check_balance(addr, MIndiv1, '9223372036854775807', '0')
@@ -100,8 +100,8 @@ class MetaDexBothRemainingTest(MasterTestFramework):
         txid2 = entity_a2.trade('0.55000000', MSC, '5', MIndiv1, ADD_1)
         self.generate_block()
 
-        trade1 = self.nodes[0].gettrade_MP(txid1)
-        trade2 = self.nodes[0].gettrade_MP(txid2)
+        trade1 = self.nodes[0].omni_gettrade(txid1)
+        trade2 = self.nodes[0].omni_gettrade(txid2)
 
         # TODO: remove debug output, once the issue is resolved!
         TestInfo.log('Trade 1:')

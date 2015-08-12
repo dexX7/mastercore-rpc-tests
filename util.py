@@ -94,7 +94,7 @@ def initialize_chain(bin_bitcoind, bin_bitcoincli, test_dir, showstdout=False):
         devnull = None
         if not showstdout:
             devnull = open("/dev/null", "w+")
-        # Create cache directories, run mastercoreds:
+        # Create cache directories, run omnicoreds:
         for i in range(4):
             datadir = initialize_datadir("cache", i)
             args = [bin_bitcoind, "-keypool=1", "-datadir=" + datadir, "-discover=0"]
@@ -128,12 +128,12 @@ def initialize_chain(bin_bitcoind, bin_bitcoincli, test_dir, showstdout=False):
                 os.remove(log_filename("cache", i, "db.log"))
             if os.path.isfile(log_filename("cache", i, "debug.log")):
                 os.remove(log_filename("cache", i, "debug.log"))
-            if os.path.isfile(log_filename("cache", i, "mastercore.log")):
-                os.remove(log_filename("cache", i, "mastercore.log"))
+            if os.path.isfile(log_filename("cache", i, "omnicore.log")):
+                os.remove(log_filename("cache", i, "omnicore.log"))
             if os.path.isfile(log_filename("cache", i, "peers.dat")):
                 os.remove(log_filename("cache", i, "peers.dat"))
-            if os.path.isfile(log_filename("cache", i, "temp-ok-to-remove.log")):
-                os.remove(log_filename("cache", i, "temp-ok-to-remove.log"))
+            if os.path.isfile(log_filename("cache", i, "fee_estimates.dat")):
+                os.remove(log_filename("cache", i, "fee_estimates.dat"))
             if os.path.isdir(log_filename("cache", i, "MP_persist")):
                 shutil.rmtree(log_filename("cache", i, "MP_persist"))
             if os.path.isdir(log_filename("cache", i, "MP_spinfo")):
@@ -177,7 +177,7 @@ def _rpchost_to_args(rpchost):
 
 def start_node(i, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=None, showstdout=False):
     """
-    Start a mastercored and return RPC connection to it
+    Start a omnicored and return RPC connection to it
     """
     datadir = os.path.join(path, "node" + str(i))
     args = [bin_bitcoind, "-datadir=" + datadir, "-keypool=1", "-discover=0"]
@@ -200,7 +200,7 @@ def start_node(i, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=N
 
 def start_nodes(num_nodes, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=None, showstdout=False):
     """
-    Start multiple mastercoreds, return RPC connections to them
+    Start multiple omnicoreds, return RPC connections to them
     """
     if extra_args is None:
         extra_args = [None for i in range(num_nodes)]
@@ -224,7 +224,7 @@ def stop_nodes(nodes):
 
 
 def wait_bitcoinds():
-    # Wait for all mastercoreds to cleanly exit
+    # Wait for all omnicoreds to cleanly exit
     for bitcoind in bitcoind_processes.values():
         bitcoind.wait()
     bitcoind_processes.clear()

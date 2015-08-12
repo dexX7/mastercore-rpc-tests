@@ -68,13 +68,13 @@ class TestInfo(object):
     @staticmethod
     def check_orderbook_count_ok(expected_count, property_a, property_b):
         if not TestInfo.ENABLED: return
-        print('Number of offers found by getorderbook_MP(SP%s, SP%s) should be: %d... OK' % (
+        print('Number of offers found by omni_getorderbook(SP%s, SP%s) should be: %d... OK' % (
             str(property_a), str(property_b), int(expected_count),))
 
     @staticmethod
     def check_active_dex_offers_count_ok(expected_count):
         if not TestInfo.ENABLED: return
-        print('Number of active offers found by getactivedexsells_MP should be: %d... OK' % (int(expected_count),))
+        print('Number of active offers found by omni_getactivedexsells should be: %d... OK' % (int(expected_count),))
 
     @staticmethod
     def log(message):

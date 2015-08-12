@@ -21,15 +21,15 @@ class PropertyCreationTest(MasterTestFramework):
         addr = self.entities[0].address
         self.entities[0].send_bitcoins(addr)
 
-        property_count_old = len(node.listproperties_MP())
+        property_count_old = len(node.omni_listproperties())
 
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')  # TIndiv1
-        node.sendrawtx_MP(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')  # TIndiv2
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976310000007fffffffffffffff')  # TDiv1
-        node.sendrawtx_MP(addr, '0000003202000200000000000054446976320000007fffffffffffffff')  # TDiv2
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976310000007fffffffffffffff')  # TIndiv1
+        node.omni_sendrawtx(addr, '0000003202000100000000000054496e646976320000007fffffffffffffff')  # TIndiv2
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976310000007fffffffffffffff')  # TDiv1
+        node.omni_sendrawtx(addr, '0000003202000200000000000054446976320000007fffffffffffffff')  # TDiv2
 
         self.generate_block()
-        property_count_new = len(node.listproperties_MP())
+        property_count_new = len(node.omni_listproperties())
 
         if property_count_new != property_count_old + 4:
             raise AssertionError('Number of properties should have increased after creating a new properties')
@@ -39,26 +39,26 @@ class PropertyCreationTest(MasterTestFramework):
         node = self.entities[0].node
         addr = self.entities[0].address
 
-        property_count_old = len(node.listproperties_MP())
+        property_count_old = len(node.omni_listproperties())
 
         TestInfo.ExpectFail()
 
         # Number of divisible tokens is zero
-        try: node.sendrawtx_MP(addr, '000000320100020000000000005a65726f4469760000000000000000000000')  # ZeroDiv
+        try: node.omni_sendrawtx(addr, '000000320100020000000000005a65726f4469760000000000000000000000')  # ZeroDiv
         except: pass
 
         # Ecosystem is 0
-        try: node.sendrawtx_MP(addr, '0000003200000200000000000045636f737973300000000000000000000064')  # Ecosys0
+        try: node.omni_sendrawtx(addr, '0000003200000200000000000045636f737973300000000000000000000064')  # Ecosys0
         except: pass
 
         # Ecosystem is 3
-        try: node.sendrawtx_MP(addr, '0000003200000200000000000045636f737973330000000000000000000064')  # Ecosys0
+        try: node.omni_sendrawtx(addr, '0000003200000200000000000045636f737973330000000000000000000064')  # Ecosys0
         except: pass
 
         TestInfo.StopExpectation()
 
         self.generate_block()
-        property_count_new = len(node.listproperties_MP())
+        property_count_new = len(node.omni_listproperties())
 
         if property_count_new != property_count_old:
             raise AssertionError(
