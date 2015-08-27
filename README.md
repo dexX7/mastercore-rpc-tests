@@ -32,12 +32,24 @@ cd mastercore-rpc-tests/
 python run_tests.py
 ```
 
+
+Testing on Windows
+==================
+
+After cloning or [downloading](https://github.com/dexX7/mastercore-rpc-tests/archive/master.zip)
+the test suite, all tests may be run on Windows in similar fashion, whereby the
+file paths of `omnicored.exe` and `omnicore-cli.exe` must be provided:
+
+```bash
+C:\mastercore-rpc-tests> python test_meta_dex_plan.py --daemon=C:\omnicore-0.0.9.99-dev\bin\omnicored.exe --cli=C:\omnicore-0.0.9.99-dev\bin\omnicore-cli.exe
+```
+
 Notes
 =====
 
 A 200-block-regtest blockchain and wallets for four nodes
 is created the first time a regression test is run and
-is stored in the cache/ directory. Per default all blocks 
+is stored in the cache/ directory. Per default all blocks
 are mined by the first node.
 
 After the first run, the cache/blockchain and wallets are
@@ -55,11 +67,11 @@ Usage and new tests
 ===================
 
 Four nodes are created to simulate and test behavior of Master
-Core. Nodes are exposed as property of a descendant of 
+Core. Nodes are exposed as property of a descendant of
 [framework_base.py](framework_base.py) and [framework_extension.py](framework_extension.py)
 and can be used to interact with Omni Core on the RPC layer.
 
-Starting point is generally `run_test` in an descendant of 
+Starting point is generally `run_test` in an descendant of
 `MasterTestFramework`. A very simple test could start like this:
 
 ```python
@@ -75,8 +87,8 @@ if __name__ == '__main__':
 ```
 
 However, it might be helpful to encapsulate nodes in `TestEntity`
-objects which aligns well with the "address-based" nature of 
-Mastercoin and due to shortcuts for commonly used calls. See 
+objects which aligns well with the "address-based" nature of
+Mastercoin and due to shortcuts for commonly used calls. See
 [framework_entity.py](framework_entity.py) for details. In
 combination with `generate_block()` and `check_balance()`, as provided
 by [framework_extension.py](framework_extension.py), a wide range of
@@ -91,17 +103,17 @@ class MinimalExodusPurchaseTest(MasterTestFramework):
         self.entities = [TestEntity(node) for node in self.nodes]
         entity_miner = self.entities[0]
         entity_test_user = self.entities[1]
-        
+
         entity_miner.send_bitcoins(entity_test_user.address, 5.0)
         self.generate_block()
         entity_test_user.purchase_mastercoins(2.5)
         self.generate_block()
-        
+
         self.check_balance(entity_test_user.address, 1, '250.00000000')
         self.check_balance(entity_test_user.address, 2, '250.00000000')
 
 if __name__ == '__main__':
-    MinimalExodusPurchaseTest().main()   
+    MinimalExodusPurchaseTest().main()
 ```
 
 Running this example would likely produce an output similar to:
@@ -146,7 +158,7 @@ pulled here using git subtree.
 ### [test_exodus_purchase.py](test_exodus_purchase.py)
 Simulates the initial redemption of Bitcoin to Mastercoin
 as well as Simple Sends.
-**This file shoud be used as template and starting point 
+**This file shoud be used as template and starting point
 for new tests.**
 
 ### [test_property_creation.py](test_property_creation.py)
@@ -156,26 +168,26 @@ Tests the creation of smart properties via the RPC call omni_sendrawtx.
 Tests sending and receiving tokens via script-hash destinations.
 
 ### [test_meta_dex_plan.py](test_meta_dex_plan.py)
-Tests invalidation and rejection of invalid commands and transactions, creation of new orders with divisible 
-units, matching and execution of offers at the same unit price, matching and execution of offers at a better 
+Tests invalidation and rejection of invalid commands and transactions, creation of new orders with divisible
+units, matching and execution of offers at the same unit price, matching and execution of offers at a better
 unit price and execution of offers with three matches.
 
 ### [test_cancel_at_price.py](test_cancel_at_price.py)
 Tests the command "cancel-at-price" of the token exchange and the valid cancellation of several offers.
 
 ### [test_cancel_pair_and_lookup.py](test_cancel_pair_and_lookup.py)
-Tests creation of several offers and cancellation with the "cancel-pair" command as well as the appearance of 
+Tests creation of several offers and cancellation with the "cancel-pair" command as well as the appearance of
 offers in the orderbook provided by RPC call omni_getorderbook.
 
 ### [test_cancel_everything.py](test_cancel_everything.py)
 Tests the effects of valid "cancel-everything" commands of the token exchange within the same ecosystem.
 
 ### [test_cancel_everything_values.py](test_cancel_everything_values.py)
-Tests if the property values of the "cancel-everything" command of the token exchange are ignored. This 
+Tests if the property values of the "cancel-everything" command of the token exchange are ignored. This
 is tested by providing raw transactions and via the RPC interface.
 
 ### [test_cancel_everything_scope.py](test_cancel_everything_scope.py)
-Tests the scope of the "cancel-everything" command of the token exchange and if it's effects are limited to 
+Tests the scope of the "cancel-everything" command of the token exchange and if it's effects are limited to
 the ecosystem they are executed in.
 
 ### [test_dex_side_effects.py](test_dex_side_effects.py)
