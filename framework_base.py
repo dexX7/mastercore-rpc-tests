@@ -167,7 +167,7 @@ class BitcoinTestFramework(object):
 
         if not self.options.nocleanup:
             print("Cleaning up")
-            shutil.rmtree(self.options.tmpdir)
+            shutil.rmtree(self.options.tmpdir, ignore_errors=True)
 
         # restore initial working dir
         os.chdir(initial_working_dir)

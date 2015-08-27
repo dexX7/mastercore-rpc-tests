@@ -93,7 +93,7 @@ def initialize_chain(bin_bitcoind, bin_bitcoincli, test_dir, showstdout=False):
     if not os.path.isdir(os.path.join("cache", "node0")):
         devnull = None
         if not showstdout:
-            devnull = open("/dev/null", "w+")
+            devnull = open(os.devnull, "w+")
         # Create cache directories, run omnicoreds:
         for i in range(4):
             datadir = initialize_datadir("cache", i)
@@ -185,7 +185,7 @@ def start_node(i, bin_bitcoind, bin_bitcoincli, path, extra_args=None, rpchost=N
         args.extend(extra_args)
     devnull = None
     if not showstdout:
-        devnull = open("/dev/null", "w+")
+        devnull = open(os.devnull, "w+")
     bitcoind_processes[i] = subprocess.Popen(args, stdout=devnull)
     subprocess.check_call([bin_bitcoincli, "-datadir=" + datadir] +
                           _rpchost_to_args(rpchost) +
