@@ -28,6 +28,17 @@ CANCEL_4 = 4
 
 
 class MetaDexPlanTest(MasterTestFramework):
+    """Python version of the MetaDEx testplan spreadsheed:
+
+    https://docs.google.com/spreadsheets/d/1oL2jGfG3BwslURyDTYNvM6Z2p79ux46NmwcXDYleEbg/edit#gid=0
+
+    Note: the RPC "trade_MP" is going to be depreciated and split into:
+      - "omni_sendtrade"
+      - "omni_sendcanceltradesbyprice"
+      - "omni_sendcanceltradesbypair"
+      - "omni_sendcancelalltrades"
+
+    However, "trade_MP" remains to be part of Omni Core for now, and simply acts as forwarder."""
 
     def run_test(self):
         self.entities = [TestEntity(node) for node in self.nodes]
@@ -36,9 +47,7 @@ class MetaDexPlanTest(MasterTestFramework):
         self.prepare_properties()
         self.initial_distribution()
 
-        # self.test_invalid_version_other_than_zero()
         self.test_invalid_action()
-        # self.test_invalid_action_raw()
         self.test_invalid_cancel_everything_no_active_offers()
         self.test_invalid_cancel_pair_no_active_offers()
         self.test_invalid_cancel_no_active_offers()
@@ -48,9 +57,7 @@ class MetaDexPlanTest(MasterTestFramework):
         self.test_invalid_add_cross_ecosystem()
         self.test_invalid_insufficient_balance()
         self.test_invalid_amount_too_large()
-        # self.test_invalid_amount_too_large_raw()
         self.test_invalid_amount_negative()
-        # self.test_invalid_negative_zero()
 
         self.test_new_orders_for_divisible()
         self.test_match_divisible_at_same_unit_price()
@@ -219,40 +226,7 @@ class MetaDexPlanTest(MasterTestFramework):
                 reason, txid, str(tx), self.nodes[0].getrawtransaction(txid),))
 
 
-    # A21
-    def test_invalid_version_other_than_zero(self):
-        """Tests transaction 21 "trade tokens for tokens" with invalid version of 1."""
-        entity_a1 = self.entities[1]
-
-        # TODO: Depreciate transaction version tests, once new version of transaction is live.
-
-        TestInfo.ExpectFail()
-
-        #                    entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, ADD_1) with "version = 1"
-        try:    txid_a21_1 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '0001001500000002000000000bebc20080000007000000000bebc20001')
-        except: txid_a21_1 = '0'
-        self.check_invalid('transaction version > 0', txid_a21_1)
-
-        #                    entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, CANCEL_2) with "version = 1"
-        try:    txid_a21_2 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '0001001500000002000000000bebc20080000007000000000bebc20002')
-        except: txid_a21_2 = '0'
-        self.check_invalid('transaction version > 0', txid_a21_2)
-
-        #                    entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, CANCEL_3) with "version = 1"
-        try:    txid_a21_3 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '0001001500000002000000000bebc20080000007000000000bebc20003')
-        except: txid_a21_3 = '0'
-        self.check_invalid('transaction version > 0', txid_a21_3)
-
-        #                    entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, CANCEL_4) with "version = 1"
-        try:    txid_a21_4 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '0001001500000002000000000bebc20080000007000000000bebc20004')
-        except: txid_a21_4 = '0'
-        self.check_invalid('transaction version > 0', txid_a21_4)
-
-        TestInfo.StopExpectation()
+    # A21 is not coded
 
 
     # A22-23
@@ -269,30 +243,6 @@ class MetaDexPlanTest(MasterTestFramework):
         self.check_invalid('invalid action (0)', txid_a22)
 
         try:    txid_a23 = entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 5)
-        except: txid_a23 = '0'
-        self.check_invalid('invalid action (5)', txid_a23)
-
-        TestInfo.StopExpectation()
-
-
-    # A22-23
-    def test_invalid_action_raw(self):
-        """Tests invalidation of orders with non-existing subaction values.
-
-        The data is submitted as raw transaction to get around RPC interface checks."""
-        entity_a1 = self.entities[1]
-
-        TestInfo.ExpectFail()
-
-        #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 0)
-        try:    txid_a22 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                       '0000001500000002000000000bebc20080000007000000000bebc20000')
-        except: txid_a22 = '0'
-        self.check_invalid('invalid action (0)', txid_a22)
-
-        #                  entity_a1.trade('2.00000000', TMSC, '2.00000000', TDiv1, 5)
-        try:    txid_a23 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                       '0000001500000002000000000bebc20080000007000000000bebc20005')
         except: txid_a23 = '0'
         self.check_invalid('invalid action (5)', txid_a23)
 
@@ -484,8 +434,7 @@ class MetaDexPlanTest(MasterTestFramework):
         """Tests invalidation of offers with amounts that are out of range.
 
         NOTE: a different number than max. + 1 (9223372036854775808, 92233720368.54775808) was chosen,
-        because max. + 1, represented as unsigned integer 0x8000000000000000, is basically also tested
-        in test_invalid_negative_zero().
+        because max. + 1, represented as unsigned integer 0x8000000000000000..
 
         The data is submitted via RPC command trade_MP."""
         entity_a1 = self.entities[1]
@@ -518,52 +467,6 @@ class MetaDexPlanTest(MasterTestFramework):
         try:    txid_a47 = entity_a1.trade('92233720368.54780000', TMSC, '9223372036854780000', TIndiv1, ADD_1)
         except: txid_a47 = '0'
         self.check_invalid('both amounts are too large', txid_a47)
-
-        TestInfo.StopExpectation()
-
-
-    def test_invalid_amount_too_large_raw(self):
-        """Tests invalidation of offers with amounts that are out of range.
-
-        NOTE: a different number than max. + 1 (9223372036854775808, 92233720368.54775808) was chosen,
-        because max. + 1, represented as unsigned integer 0x8000000000000000, is basically also tested
-        in test_invalid_negative_zero().
-
-        The data is submitted as raw transaction to get around RPC interface checks."""
-        entity_a1 = self.entities[1]
-        entity_a3 = self.entities[3]
-
-        TestInfo.ExpectFail()
-
-        #          entity_a1.trade('0.00000001', TDiv1, '92233720368.54780000', TMSC, ADD_1)
-        txid_a42 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                               '0000001580000007000000000000000100000002800000000000106001')
-        self.check_invalid('amount desired is too large (0x8000000000001060 TMSC)', txid_a42)
-
-        #          entity_a3.trade('92233720368.54780000', TDivMax, '0.00000001', TMSC, ADD_1)
-        txid_a43 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                               '000000158000000a800000000000106000000002000000000000000101')
-        self.check_invalid('amount for sale is too large (0x8000000000001060 TDivMax)', txid_a43)
-
-        #          entity_a1.trade('1', TIndiv1, '92233720368.54780000', TMSC, ADD_1)
-        txid_a44 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                               '0000001580000003000000000000000100000002800000000000106001')
-        self.check_invalid('amount desired is too large (0x8000000000001060 TMSC)', txid_a44)
-
-        #          entity_a3.trade('9223372036854780000', TIndivMax, '0.00000001', TMSC, ADD_1)
-        txid_a45 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                               '0000001580000006800000000000106000000002000000000000000101')
-        self.check_invalid('amount for sale is too large (0x8000000000001060 TIndivMax)', txid_a45)
-
-        #          entity_a1.trade('92233720368.54780000', TMSC, '92233720368.54780000', TDiv1, ADD_1)
-        txid_a46 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                               '0000001500000002800000000000106080000007800000000000106001')
-        self.check_invalid('both amounts are too large (0x8000000000001060 TMSC, 0x8000000000001060 TDiv1)', txid_a46)
-
-        #          entity_a1.trade('92233720368.54780000', TMSC, '9223372036854780000', TIndiv1, ADD_1)
-        txid_a47 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                               '0000001500000002800000000000106080000003800000000000106001')
-        self.check_invalid('both amounts are too large (0x8000000000001060 TMSC, 0x8000000000001060 TIndiv1)', txid_a47)
 
         TestInfo.StopExpectation()
 
@@ -603,71 +506,6 @@ class MetaDexPlanTest(MasterTestFramework):
 
         TestInfo.StopExpectation()
 
-
-    def test_invalid_negative_zero(self):
-        """Tests invalidation of offers with amounts that might be interpreted as negative zero.
-
-        NOTE: there is no negative zero in two's complement representation, but it is simulated with amounts of
-        0x8000000000000000 and 0xffffffffffffffff, which are interpreted as out-of-range or negative number. Due
-        to this behavior, this test currently acts as enhancement for out-of-range and negative-number tests.
-
-        The data is submitted as raw transaction to get around RPC interface checks."""
-        entity_a1 = self.entities[1]
-        entity_a3 = self.entities[3]
-
-        # TODO: Split, rename or merge this test with other out-of-range tests.
-
-        TestInfo.ExpectFail()
-
-        #                    entity_a1.trade('-0.00000000', TMSC, '1.00000000', TDiv1, ADD_1)
-        try:    txid_a54_1 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '00000015000000028000000000000000800000070000000005f5e10001')
-        except: txid_a54_1 = '0'
-        self.check_invalid('amount for sale is not within valid range (0x8000000000000000 TMSC)', txid_a54_1)
-
-        #                    entity_a1.trade('-0.00000000', TMSC, '1.00000000', TDiv1, ADD_1)
-        try:    txid_a54_2 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '0000001500000002ffffffffffffffff800000070000000005f5e10001')
-        except: txid_a54_2 = '0'
-        self.check_invalid('amount for sale is not within valid range (0xffffffffffffffff TMSC)', txid_a54_2)
-
-        #                    entity_a3.trade('-0', TIndivMax, '1.00000000', TMSC, ADD_1)
-        try:    txid_a54_3 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                                         '00000015800000068000000000000000000000020000000005f5e10001')
-        except: txid_a54_3 = '0'
-        self.check_invalid('amount for sale is not within valid range (0x8000000000000000 TIndivMax)', txid_a54_3)
-
-        #                    entity_a3.trade('-0', TIndivMax, '1.00000000', TMSC, ADD_1)
-        try:    txid_a54_4 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                                         '0000001580000006ffffffffffffffff000000020000000005f5e10001')
-        except: txid_a54_4 = '0'
-        self.check_invalid('amount for sale is not within valid range (0xffffffffffffffff TIndivMax)', txid_a54_4)
-
-        #                    entity_a1.trade('1.00000000', TMSC, '-0', TIndiv1, ADD_1)
-        try:    txid_a55_1 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '00000015000000020000000005f5e10080000003800000000000000001')
-        except: txid_a55_1 = '0'
-        self.check_invalid('amount desired is not within valid range (0x8000000000000000 TMSC)', txid_a55_1)
-
-        #                    entity_a1.trade('1.00000000', TMSC, '-0', TIndiv1, ADD_1)
-        try:    txid_a55_2 = entity_a1.node.omni_sendrawtx(entity_a1.address,
-                                                         '00000015000000020000000005f5e10080000003ffffffffffffffff01')
-        except: txid_a55_2 = '0'
-        self.check_invalid('amount desired is not within valid range (0xffffffffffffffff TMSC)', txid_a55_2)
-
-        #                    entity_a3.trade('1.00000000', TMSC, '-1.00000000', TDivMax, ADD_1)
-        try:    txid_a55_3 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                                         '00000015000000020000000005f5e1008000000a800000000000000001')
-        except: txid_a55_3 = '0'
-        self.check_invalid('amount desired is not within valid range (0x8000000000000000 TMSC)', txid_a55_3)
-
-        #                    entity_a3.trade('1.00000000', TMSC, '-1.00000000', TDivMax, ADD_1)
-        try:    txid_a55_4 = entity_a3.node.omni_sendrawtx(entity_a3.address,
-                                                         '00000015000000020000000005f5e1008000000affffffffffffffff01')
-        except: txid_a55_4 = '0'
-        self.check_invalid('amount desired is not within valid range (0xffffffffffffffff TMSC)', txid_a55_4)
-
-        TestInfo.StopExpectation()
 
     # A59-65
     def test_new_orders_for_divisible(self):
@@ -1740,8 +1578,6 @@ class MetaDexPlanTest(MasterTestFramework):
         # A134
         #entity_a2.trade('0.00000000', TMSC, '0', TIndiv3, CANCEL_4)
         #self.generate_block()
-
-
 
 
 if __name__ == '__main__':
