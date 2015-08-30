@@ -8,7 +8,6 @@ from framework_info import TestInfo
 from test_cancel_at_price import MetaDexCancelAtPriceTest
 from test_cancel_everything import MetaDexCancelEverythingInSameEcosystemTest
 from test_cancel_everything_scope import MetaDexCancelEverythingScopeTest
-from test_cancel_everything_values import MetaDexCancelEverythingIgnorePropertyTest
 from test_cancel_pair_and_lookup import MetaDexCancelPairAndLookupTest
 from test_dex_side_effects import DexCrossEcosystemSideEffectsTest
 from test_exodus_purchase import ExodusPurchaseTest
@@ -70,7 +69,6 @@ if __name__ == '__main__':
     enqueue_test (MetaDexCancelPairAndLookupTest)
     enqueue_test (DexCrossEcosystemSideEffectsTest)
     enqueue_test (MetaDexCancelEverythingInSameEcosystemTest)
-    enqueue_test (MetaDexCancelEverythingIgnorePropertyTest)
     enqueue_test (MetaDexCancelEverythingScopeTest)
     enqueue_test (MetaDexBestFillTest)
     enqueue_test (MetaDexZeroTradeTest)

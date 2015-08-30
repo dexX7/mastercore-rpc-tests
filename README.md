@@ -182,10 +182,6 @@ offers in the orderbook provided by RPC call omni_getorderbook.
 ### [test_cancel_everything.py](test_cancel_everything.py)
 Tests the effects of valid "cancel-everything" commands of the token exchange within the same ecosystem.
 
-### [test_cancel_everything_values.py](test_cancel_everything_values.py)
-Tests if the property values of the "cancel-everything" command of the token exchange are ignored. This
-is tested by providing raw transactions and via the RPC interface.
-
 ### [test_cancel_everything_scope.py](test_cancel_everything_scope.py)
 Tests the scope of the "cancel-everything" command of the token exchange and if it's effects are limited to
 the ecosystem they are executed in.
